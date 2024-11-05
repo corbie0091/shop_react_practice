@@ -78,5 +78,15 @@ let 변수 = [{}, {}, {}]을 map함수로 뿌릴때, 이를 컴포넌트화시�
 {shoes.map((shoes) => (
 <Container2 shoes={shoes} key={shoes.id}></Container2>
 ))}
+
 정리: map함수를 쓸때 안에 JSX를 반환해야한다.
 그래서 {}대신 return{}키워드를 사용하거나, ()괄호로 JSX를 감싸서 반환하면 된다.
+
+[숙제시 궁금했던 점]
+
+<div key={props.shoes.id} className="col-md-4">
+key값을 분명 코드를 짰지만 html에서 보이지 않아 궁금했다.
+검색후:
+이는 정상적인 모습으로 key가 누락되었거나 고유하지 않으면, 경고메시지가 나타났을 것으로, 경고가 표시되지 않고 있다는 것은 key값이 잘 설정되어 있다는 반증이 되기도 한다는 것이다. 
++ 검사를 하고싶다면 콘솔창을 확인해보자
+console.log("Key:", props.shoes.id); // in 컴포넌트(props)

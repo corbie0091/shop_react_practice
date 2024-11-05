@@ -37,7 +37,6 @@ function App() {
 function Container2(props) {
   return (
     <div key={props.shoes.id} className="col-md-4">
-      {console.log("Key:", props.shoes.id)}
       <img src={props.shoes.img} className="product-img" width="80%" />
       <h4>{props.shoes.title}</h4>
       <p>{props.shoes.price}원</p>
