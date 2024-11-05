@@ -43,3 +43,40 @@ ex) <img
 case4] 외부에 호스팅해둔 이미지라면 이미지 절대주소만 넣어줘도 된다.
 B. 상품 레이아웃 3개를 만들어보자. - Bootstrap으로 할 것임
 Bootstrap - grid 활용해도 됨
+
+3강. 서버에서 데이터가져와서 불러오기
+일단 없으므로 변수를 state형태로 저장해놓아서 연습해보자.
+하지만 useState에 바로 넣기에는 object가 크기 때문에 다른 js파일에 넣어두고 이를 활용하기로 해보자.
+data.js 파일 생성 > export import문법 사용해야함 >
+[참고 예시]
+let a = 10;
+export default a;
+이렇게 변수를 export하고 App.js파일에서 사용하고 싶다면
+import a from "./data.js"해주면 사용 가능하다.
+즉 파일간 변수공유가 가능하다( 복사 개념 )
+[참고 예시2]
+여러 변수를 참고 하고싶다면?
+let a = 10;
+let b = 100;
+export { a, b }
+이런식으로 해주면 된다 .
+import { a, b, c } from "./data.js" 이렇게 해주면 된다.
+[참고] 컴포넌트도 export가능
+*숙제1: 상품목록 컴포넌트화
+*숙제2: 상품명 데이터바인딩도 잘 해오기 \*숙제3: 반복적인 부분은 map반복문 써보기
+
+[숙제시 어려웠던 점]
+let 변수 = [{}, {}, {}]을 map함수로 뿌릴때, 이를 컴포넌트화시켜 코드를 간결하게 짜고싶었는데 그러지 못했다.
+이유: map함수 안에서 JSX를 변환하지 않고 {}중괄호만을 사용했던 점
+해결방법: map함수 안에서 바로 JSX를 반환해야 랜더링이됨
+
+해결전:
+{shoes.map((shoes) => {
+<Container2 shoes={shoes}></Container2>;
+})}
+해결후:
+{shoes.map((shoes) => (
+<Container2 shoes={shoes} key={shoes.id}></Container2>
+))}
+정리: map함수를 쓸때 안에 JSX를 반환해야한다.
+그래서 {}대신 return{}키워드를 사용하거나, ()괄호로 JSX를 감싸서 반환하면 된다.

@@ -5,6 +5,12 @@
   background-position: center;
 }
 
+.product-img {
+  width: 100%;
+  height: 20vh;
+  object-fit: cover;
+}
+
 .App {
   text-align: center;
 }

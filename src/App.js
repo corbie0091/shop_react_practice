@@ -2,8 +2,11 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import "./App.css";
 import Button from "react-bootstrap/Button";
 import bg from "./img/bg.png";
+import { useState } from "react";
+import data from "./data.js";
 
 function App() {
+  let [shoes] = useState(data); // data.js파일에서 import
   return (
     <div className="App">
       <Navbar bg="dark" data-bs-theme="dark">
@@ -20,35 +23,24 @@ function App() {
       <div className="main-bg" style={{ backgroundImage: `url(${bg})` }}></div>
       <div className="container">
         <div className="row">
-          <div className="col-md-4">
-            <img
-              src="https://economist.co.kr/data/ecn/image/2023/02/04/ecn20230204000012.jpg"
-              width="80%"
-            />
-            <h4>상품명</h4>
-            <p>상품설명</p>
-          </div>
-          <div className="col-md-4">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTj6cuNo1jEkqmkDFuYfLvMT5DWUYg4FDE2Gg&s"
-              width="80%"
-            />
-            <h4>상품명</h4>
-            <p>상품설명</p>
-          </div>
-          <div className="col-md-4">
-            <img
-              src={process.env.PUBLIC_URL + "/col-mg1.jpg"}
-              width="80%"
-              height={"110px"}
-            />
-            <h4>상품명</h4>
-            <p>상품설명</p>
-          </div>
+          {shoes.map((shoes) => (
+            <Container2 shoes={shoes} key={shoes.id}></Container2>
+          ))}
         </div>
       </div>
       <br />
       <Button variant="primary">구매하기</Button>{" "}
+    </div>
+  );
+}
+
+function Container2(props) {
+  return (
+    <div key={props.shoes.id} className="col-md-4">
+      {console.log("Key:", props.shoes.id)}
+      <img src={props.shoes.img} className="product-img" width="80%" />
+      <h4>{props.shoes.title}</h4>
+      <p>{props.shoes.price}원</p>
     </div>
   );
 }
