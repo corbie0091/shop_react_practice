@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import bg from "./img/bg.png";
 import { useState } from "react";
 import data from "./data.js";
+import { Route, Routes, Link } from "react-router-dom";
 
 function App() {
   let [shoes] = useState(data); // data.js파일에서 import
@@ -11,35 +12,49 @@ function App() {
     <div className="App">
       <Navbar bg="dark" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand href="#home">OttShop</Navbar.Brand>
+          <Navbar.Brand href="/">OttShop</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link href="#shop">SHOP</Nav.Link>
-            <Nav.Link href="#about">ABOUT</Nav.Link>
-            <Nav.Link href="#community">COMMUNITY</Nav.Link>
-            <Nav.Link href="#Cart">CART</Nav.Link>
+            <Link to="/shop">SHOP</Link>
+            <Link to="/about">ABOUT</Link>
+            <Link to="/community">COMMUNITY</Link>
+            <Link to="/cart">CART</Link>
           </Nav>
         </Container>
       </Navbar>
-      <div className="main-bg" style={{ backgroundImage: `url(${bg})` }}></div>
-      <div className="container">
-        <div className="row">
-          {shoes.map((shoes) => (
-            <Container2 shoes={shoes} key={shoes.id}></Container2>
-          ))}
-        </div>
-      </div>
-      <br />
-      <Button variant="primary">구매하기</Button>{" "}
+
+      <Routes>
+        <Route path="/" element={<MainPage shoes={shoes} />} />
+        <Route path="/shop" element={<div>옷페이지임</div>} />
+        <Route path="/about" element={<div>어바웃페이지임</div>} />
+        <Route path="/community" element={<div>공지사항페이지임</div>} />
+        <Route path="/cart" element={<div>장바구니페이지임</div>} />
+      </Routes>
     </div>
   );
 }
 
-function Container2(props) {
+function MainPage({ shoes }) {
   return (
-    <div key={props.shoes.id} className="col-md-4">
-      <img src={props.shoes.img} className="product-img" width="80%" />
-      <h4>{props.shoes.title}</h4>
-      <p>{props.shoes.price}원</p>
+    <>
+      <div className="main-bg" style={{ backgroundImage: `url(${bg})` }}></div>
+      <br />
+      <div className="container">
+        <div className="row">
+          {shoes.map((shoe, i) => (
+            <Card shoe={shoe} key={shoe.id}></Card>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Card({ shoe, key }) {
+  return (
+    <div key={key} className="col-md-4">
+      <img src={shoe.img} className="product-img" width="80%" />
+      <h4>{shoe.title}</h4>
+      <p>{shoe.price}원</p>
     </div>
   );
 }

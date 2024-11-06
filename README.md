@@ -82,6 +82,10 @@ let 변수 = [{}, {}, {}]을 map함수로 뿌릴때, 이를 컴포넌트화시�
 정리: map함수를 쓸때 안에 JSX를 반환해야한다.
 그래서 {}대신 return{}키워드를 사용하거나, ()괄호로 JSX를 감싸서 반환하면 된다.
 
+[다른 풀이코드]
+{shoes.map((a,i) => (
+<Card shoes={shoes[i]} i={i+1}></Card>
+))}
 [숙제시 궁금했던 점]
 
 <div key={props.shoes.id} className="col-md-4">
@@ -90,3 +94,53 @@ key값을 분명 코드를 짰지만 html에서 보이지 않아 궁금했다.
 이는 정상적인 모습으로 key가 누락되었거나 고유하지 않으면, 경고메시지가 나타났을 것으로, 경고가 표시되지 않고 있다는 것은 key값이 잘 설정되어 있다는 반증이 되기도 한다는 것이다. 
 + 검사를 하고싶다면 콘솔창을 확인해보자
 console.log("Key:", props.shoes.id); // in 컴포넌트(props)
+
+5강. 여러 페이지 만드는 방법 -상세페이지 -장바구니페이지
+
+근데 이전에 다른 사이트 확인해보며 어떤 페이지가 있는지 파악 (naverVIBE)
+파악해보니
+/chart
+/magazines 이런식으로 URL마다 페이지를 구분해놓음
+
+우리도 이렇게 해보자!
+/detail로 접속하면 상세페이지보여주고
+/cart로 접속하면 장바구니페이지 보여주고
+...
+
+페이지 나누는 법(리액트 미사용)
+1.html 파일 만들어서 상세페이지 내용 채움 2. 누가 /detail로 접속하면 html파일을 보여줌
+
+페이지 나누는 법 (리액트 사용)
+SPA로서 index.html만 보여줌
+
+1. 컴포넌트 만들어서 상세페이지 내용 채움
+2. 누가 /detail접속하면 그 컴포넌트 보여줌
+   (참고로 컴포넌트 우리가 짤 수 있지만 도와주는 라이브러리를 사용할 것임 )
+
+[참고] react-router-dom 사용하면 편리함
+[참고] 설치방법은 항상 사이트 참고해서 설치해야함
+
+1. npm install react-router-dom
+2. index.js > <App/>을 <BrowserRouter></BrowserRouter>로 감싸야함
+3. import 필수
+
+[참고] import할 때 ./~ 이렇게 된건 내가만든 js파일들에서 가져온 것
+[참고] import할 때 react-router-dom 이런건 대부분 설치한 라이브러리임
+[참고] 외부 라이브러리는 필요할 때 마다 검색해서 써주면 됨 4. App.js > import { } from "react-router-dom" >
+{}안에 Routes, Route, Link 를 집어넣자. >
+App return 문 안에 <Routes>
+<Route path="/" element={<div>메인페이지임</div>} />
+<Route path="/shop" element={<div>옷페이지임</div>} />
+<Route path="/about" element={<div>어바웃페이지임</div>} />
+</Routes> .. 집어넣자 >
+Q. 상품목록은 메인페이지에만 보여주고 싶은데? > <Route path="/" element={}> {}중괄호 안에 상품목록을 넣어주면 되지 않을까? > 그래서 페이지도 컴포넌트로 축약해놓으면 좋음 5. 일반 유저들 > 페이지이동을 하는 방법? > 버튼으로 진행함 > 페이지 이동 버튼을 부여해보자.
+페이지 이동버튼은 <Link>태그를 가져다 쓰자
+
+    > 이런 식으로 페이지 이동 버튼을 지정해주면 된다.
+
+          <Link to="/">홈</Link>
+          <Link to="/shop">옷페이지</Link>
+    > 이부분을 Nav태그 부분을 채워놓으면 될듯하다.
+    > 나머지 디자인 적인 부분은 알아서 해오도록.
+
+6.
