@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { styled } from "styled-components";
 
@@ -15,14 +16,21 @@ let Box = styled.div`
 `;
 
 function Detail(props) {
+  useEffect(() => {
+    console.log("안녕");
+  });
+  let [count, setCount] = useState(0);
   let { id } = useParams();
   return (
     <div className="container">
-      <Box>
-        <YellowBtn bg="blue">버튼</YellowBtn>
-        <YellowBtn bg="yellow">버튼</YellowBtn>
-        <NewBtn bg="gray6">버튼</NewBtn>
-      </Box>
+      {count}
+      <button
+        onClick={() => {
+          setCount(count + 1);
+        }}
+      >
+        버튼
+      </button>
       <div className="row">
         <div className="col-md-6">
           <img src={props.shoes[id].img} width="100%" alt="" />

@@ -81,9 +81,9 @@ function MainPage({ shoes }) {
   );
 }
 
-function Card({ shoe, key }) {
+function Card({ shoe }) {
   return (
-    <div key={key} className="col-md-4">
+    <div key={shoe.id} className="col-md-4">
       <img src={shoe.img} alt={shoe.img} className="product-img" width="80%" />
       <h4>{shoe.title}</h4>
       <p>{shoe.price}원</p>

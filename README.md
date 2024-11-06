@@ -289,3 +289,71 @@ let NewBtn = styled(YellowBtn)`커스터마이징 가능`;
 [단점1] JS파일이 매우 복잡해짐
 [단점2] 중복스타일은 컴포넌트간 import할텐데 그러면 CSS와 다를바가 없군
 [단점3] 협업시에 CSS담당자가 있을시 숙련도 이슈가 있을 수 있음
+
+8강. Lifecycle 과 useEffect 1
+컴포넌트의 Lifecycle?
+컴포넌트도 사람처럼 태어나서 죽는 생명주기
+Detail 페이지를 들어갔을 때 페이지에 장착되기도 하고(mount)
+가끔 업데이트도 되고 (update)
+필요없으면 제거되는 (unmount)여러가지 과정을 얘기함
+[참고]왜 알아야하나? 중간중간 간섭이 가능 \*간섭: 코드 실행
+컴포넌트가 업데이트가 될때 중간중간에 특정 코드를 실행시킬 수 있음
+How? 갈고리를 걸어 실행할코드를 적을 수 있음
+만약 mount에 걸어주면 그떄 실행하고 update에 갈고리를 걸면 그때 실행하도록 도와줌
+
+예전 클래스형 컴포넌트에선
+class Detail2 extends React.Component {
+componentsDidMount(){} //컴포넌트 mount시 실행됨
+componentDidUpdate(){} //
+componentWillUnmount(){} //
+}
+
+요즘 컴포넌트 훅을 사용 (import해와야함)
+useEffect(() => {}) // 이안에 적은 코드는 mount,update시 여기 코드가 실행되도록 해줌
+
+useEffect(() => {
+console.log("안녕");
+});
+이렇게 하면 안녕이 마운트될때 뜨는 것을 알 수 있음
+[참고] 2개이상뜨는 경우가 많이 발생함: 실제 deploy하면 한 번 밖에 뜨지 않음 (디버깅을 위해 원래 그럼)
+=> 1개만 뜨게 하고싶다면 <React.StrictMode>없애주면 됨
+update될때 실행이 되는지 어떻게 파악?
+let [count , setCount] = useState();
+버튼을 만들어 클릭때마다 count가 update되도록 코드수정하고 보면, 콘솔창에 안녕이 클릭할 때마다 찍히는 것을 알 수 있다.
+[참고] Q.
+useEffect(() => {
+});
+console.log("안녕");
+그냥 이렇게 바깥에 넣어도 똑같은데??
+[useEffect쓰는이유]
+useEffect의 동작원리 : 실행 시점이 약간 다름
+안에 적힌 코드는 랜더링이 다 돼서 그제서야 실행이 됨
+즉 html 렌더링 후 동작함
+
+예시 ) 복잡한 연산을 시킨 후
+useEffect(() => {
+});
+for (var i = 0; i < 10000; i ++) {
+console.log(1);
+}
+반복문 부터 실행하는 js ( 2초넘게 걸림) > html이 나중에 실행됨
+
+하지만 이렇게 오래걸리는 작업을 useEffect안에 넣으면
+useEffect(() => {
+for (var i = 0; i < 10000; i ++) {
+console.log(1);
+});
+}
+[point]useEffect안에 있는 코드는 html랜더링 후에 동작할 수 있도록 해줌
+조금더 html을 먼저 보여주고 어려운 작업을 실행할 수 있도록 해서 사용자들에게 좋은 UX를 줌
+
+[사용]
+useEffect는 즉 시간이 많이 걸리는 어려운 연산때 사용
+서버에서 데이터를 가져오는 작업을 여기에서 많이 사용
+타이머를 장착하는 것도 여기서 작업
+
+[참고] Q. 왜 이름이 useEffect임
+프로그램 쓸때 Side Effect라는 개념이 있음
+함수의 핵심기능과 상관없는 부가기능이라는 개념인데
+여기서 개념을 따온 것임
+즉 Side Effect 코드들을 보관하는 함 개념이라는 것임
