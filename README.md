@@ -251,3 +251,41 @@ Detail 컴포넌트에 props를 전달 > {props.shoes[0].title} 식으로 받아
   <h4 className="pt-5">{찾은상품.title}</h4>
           <p>{찾은상품.content}</p>
           <p>{찾은상품.price}원</p> 이런식으로 표현식을 만들어 출력하면 문제가 없어질 것이다.
+
+7강. styled-component
+[요약정리] 이쁜 버튼을 만들고 싶으면?
+[지금] <button className="??"> CSS파일 가야함
+[styled-components] JS파일에서 전부 해결이 가능
+
+설치) npm install styled-components
+Detail.js) import진행 > styled.button`버튼스타일지정`; > let YellowBtn = styled.button`  background: yellow;
+  color: black;
+  padding: 10px;`;
+이자리는 컴포넌트를 작명해주기때문에 대문자로 쓰고 사용해주면 됨
+
+[장점1] CSS파일 안열어도 됩니다
+[장점2] 스타일이 다른 js파일로 오염되지 않음
+(나중에 build할 시에 오염될 수 있음 섞여서)
+(사실 작명을 잘하면 되긴함 App.module.css 의존성추가가능 Detail.js 는 Detail.module.css 만들면 거기에만 종속하게 가능)
+[장점3] 페이지 로딩시간이 단축됨
+홈페이지 구동에 필요한 로딩시간만으로 단축됨
+
+[문제] Q.옐로우버튼을 이미 만들어 놨었는데, 오렌지색버튼이 필요하다면? -> props문법을 쓰면 됨.
+약간 씩 다르게 사용할 수 있음
+가변적인 부분을 ${}로 뚫어놓고,
+let YellowBtn = styled.button`  background: ${(props) => props.bg};
+  color: black;
+  padding: 10px;`;
+이런식으로 props 설정해서 받아올 수 있도록 함,
+이후 부모컴포넌트에서 받아옴 <YellowBtn bg="blue">버튼</YellowBtn>
+받아온 부분을 자식컴포넌트가 받아 뿌려줌
+즉, props만 살짝씩 바꿔주면 다른 색의 버튼을 만들 수 있음
+(props) => props.bg부분은 이해보다는 그냥 방식이라 외워요.
+[참고] 버튼의 글자 색상을 밝게 하고싶다? -> 조건문을 추가하자.
+color: ${(props) => (props.bg == "blue" ? "white" : "black")};
+ㄴ 이런식으로 간단한 프로그래밍 기능 추가 가능
+[참고] 기존 스타일의 복사를 가능
+let NewBtn = styled(YellowBtn)`커스터마이징 가능`;
+[단점1] JS파일이 매우 복잡해짐
+[단점2] 중복스타일은 컴포넌트간 import할텐데 그러면 CSS와 다를바가 없군
+[단점3] 협업시에 CSS담당자가 있을시 숙련도 이슈가 있을 수 있음

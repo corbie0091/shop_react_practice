@@ -1,9 +1,28 @@
 import { useParams } from "react-router-dom";
+import { styled } from "styled-components";
+
+let YellowBtn = styled.button`
+  background: ${(props) => props.bg};
+  color: ${(props) => (props.bg == "blue" ? "white" : "black")};
+  padding: 10px;
+`;
+
+let NewBtn = styled(YellowBtn)``;
+
+let Box = styled.div`
+  background: gray;
+  padding: 20px;
+`;
 
 function Detail(props) {
   let { id } = useParams();
   return (
     <div className="container">
+      <Box>
+        <YellowBtn bg="blue">버튼</YellowBtn>
+        <YellowBtn bg="yellow">버튼</YellowBtn>
+        <NewBtn bg="gray6">버튼</NewBtn>
+      </Box>
       <div className="row">
         <div className="col-md-6">
           <img src={props.shoes[id].img} width="100%" alt="" />
