@@ -143,4 +143,65 @@ Q. 상품목록은 메인페이지에만 보여주고 싶은데? > <Route path="
     > 이부분을 Nav태그 부분을 채워놓으면 될듯하다.
     > 나머지 디자인 적인 부분은 알아서 해오도록.
 
-6.
+[숙제]
+
+6강. 리액트 라우터2 : navigate, nested, routes, outlet
+
+[참고]리액트 폴더 구조? = 비슷한 파일끼리 폴더로 묶는게 끝임
+
+routes폴더 생성하고 > Detail.js 이런식으로 페이지 만들면 여기에 집어 넣자.
+[주의] 파일 경로가 바뀌면 import경로도 다 확인해주자.
+
+[경고]
+{
+
+1. ESLint 경고 : Button' is defined but never used
+   사용하지 않는 변수나 import는 불필요한 코드로 간주되기 때문에, ESLint는 이를 제거할 것을 권장
+2. ESLint 경고 : img elements must have an alt prop
+   접근성 규칙에 따라 <img> 태그에는 항상 alt 속성이 있어야 한다. (시각장애인을 위한 접근성 향상)
+3. babel-preset-react-app 관련 경고 :
+   abel-preset-react-app에서 @babel/plugin-proposal-private-property-in-object라는 패키지를 암묵적으로 사용하고 있지만, 이 패키지가 종속성에 선언되지 않아 경고가 발생
+   이 문제는 create-react-app이 더 이상 유지보수되지 않기 때문에 수정되지 않을 가능성이 크다 따라서
+   npm install --save-dev @babel/plugin-proposal-private-property-in-object 을 입력해 devDependencies에 추가하면 된다.
+   }
+
+1) 페이지 이동 도와주는 useNavigate()
+   import { Route, Routes, Link, useNavigate, Outlet } from "react-router-dom"; 이런식으로 App.js에 import
+   useNavigate()는 훅 이자 함수.
+   let navigate = useNavigate();이런식으로 변수에 함수를 저장하는 식으로 저장
+   페이지 이동하는 것을 쉽게 할 수 있음
+   페이지 이동 이전) Link태그는 a태그느낌으로 사용함 하지만
+   페이지 이동 지금)
+   <Nav.Link
+   onClick={() => {
+   navigate("/community");
+   }} >
+   COMMUNITY
+   </Nav.Link>
+   이런식으로 onClick()안에 함수를 집어넣어서 적용
+
+2) 404페이지 경로 : \_를 해주면 else문과 같이 적용 <Route path="\*" element={<div>404페이지입니다</div>} /> 즉 없는 페이지를 알려주기 위함
+
+3) Nested Routes
+   예를 들어 /about 페이지에서 /about/member 페이지도 만들고 /about/location 페이지도 만들어주고 싶음
+   그러면 Route를 여러개 만들어주면 됨
+   <Route path="/about" element={<About />}/>
+   <Route path="/about/member" element={<About />}/>
+   <Route path="/about/location" element={<About />}/>
+   근데 이런식말고 Nested Routes문법으로 같은 페이지를 만들어 줄 수 있음
+   <Route path="/about" element={<About />}
+   <Route path="member" element={<div>맴버임</div>}/>
+   <Route path="location" element={<div>location</div>}/>
+   </Route>
+   태그안에 태그가 들어간 모양임
+   누가 /about/member로 들어오면 member 거기로 보여주세요 이런 느낌임 ( 장점: route 작성이 간단해짐, nested route 접속시엔 element 2개나 보임)
+   [참고] 위에 이렇게 짜고 주소에 작성해도 안보임
+   why? 어디에 보여줄지 작성해야하기 때문임 > 어디보여줄지 정하려면 About컴포넌트안에서 Outlet 을 사용하면 된다.
+   About안에 member를 어떻게 보여줄건지 할 거면 Outlet을 작성해 보여주면 된다.
+   [참고] Q.nested routes 언제 쓸까?
+   - 여러 유사한 페이지가 필요할 때,
+   - 차이점이 별로 필요없을 때
+   - 박스 하나만 살짝씩 바뀌게 될 때 ( 일부만 변경할 때 )
+4) 라우터의 장점:
+   - 뒤로가기 버튼이 잘먹음
+   - 페이지 이동이 쉽게됨 ( UI스위치 조작이 쉬움 )
