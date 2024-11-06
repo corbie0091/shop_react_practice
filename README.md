@@ -360,3 +360,53 @@ useEffect는 즉 시간이 많이 걸리는 어려운 연산때 사용
 
 [참고] setTimeout(() => {실행할코드}, 1000);
 타이머 주는 문법 1000는 1초개념
+
+9강. Lifecycle 과 useEffect2
+[문제] Detail방문시 2초후 <div>사라지게
+
+1. useEffect(() => {setTimeout(()=> {}, 2000)})
+   (안에 <div>안보이게 처리해주세요는 js방식, 리액트방식은 스위치조작해주세요임)
+   즉 스위치를 만들어야함 = UI상태를 저장할 state를 만들고
+   state따라서 UI가 어떻게 보일지 작성해주면 됨
+
+let [alert, setAlert] = useState(true);
+
+[참고] useState는 배열을 반환하므로 배열 구조분해 할당을 사용해야함
+
+2. useEffect(() => {setTimeout(()=> { setAlert(false)}, 2000)})
+
+3. useEffect(() => {setTimeout(()=> { setAlert(false)}, 2000)}, []) 이렇게 추가해야 더 정확함
+   useEffect실행조건 넣을 수 있는 곳은 []임
+   ex) [count]로 집어넣으면 ( dependency추가 )
+   mount, update시 실행되는데 count라는 변수가 update될 떄만 useEffect가 실행된다는 것임
+   mount시와 count가 변경될 때만 실행됨
+   console.log(1) + count변수 만들어서 업데이트 될 때 체크해봄
+   [참고] 편법인데, [] 즉 dependency가 없게 해놓으면 update가 실행되지 않음 재랜더링되어도 코드가 재실행되지 않음을 알 수 있음
+   즉 , 컴포넌트가 장착될때 mount될 떄만 코드가 한 번만 실행됨 = 즉 효율적인 타이머를 만들 수 있음
+   [참고] return 을 추가 할 수 있음
+   return () => {
+
+}
+이부분은 useEffect 동작 전에 실행이 되는 함수들을 적어 놓으면 실행이 됨
+이부분의 별명 : cleanup function
+2초가 넘어가고 나서 cleanTimeout(timer) 이렇게 코드를 짜면 타이머가 이후 없어지게 됨
+
+타이머를 하나 만들게되면 진짜 타이머가 생성됨 -> useEffect에 타이머를 만들면 재랜더링이 계속됨 그러면> 타이머가 100개 1000개가 만들어 질 수 있음 > 그래서 기존 타이머는 제거 해주세요 라고 return에 적음 > 내가 꼭 필요한 타이머 하나만 장착할 수 있기 때문에 쓸데없는 비효율적인 코드를 제거할 수 있음
+
+[참고]응용할 수 있는 분야 : 데이터 요청하는 코드
+2초 3초정도 걸림 > 2초 데이터를 가져오는 도중에 재렌더링이 됨 > 요청이 끝나질때쭘에 또 재랜더링하면 많아져 오류를 불러일으킴 > 그래서 기존 데이터 요청은 제거해주세요 라는 cleanup function을 사용해주면 된다.
+
+[참고]clean up function은 mount시 실행이 안되고, unmount시에만 실행이 됨 ( 다른 페이지로 넘어가거나 detail페이지를 빠져나왔을 때)
+
+[useEffect정리] 어떤식으로 사용하면 되나?
+
+1. 재랜더링마다 코드 실행하고 싶다면 useEffect(() => { 실행할 코드
+   });
+2. mount시 1회 코드 실행하고 싶다면 useEffect(() => { 실행할 코드
+   }, []);
+3. unmount시 1회 코드 실행하고 싶다면 useEffect(() => { return() => {실행할 코드}
+   });
+4. useEffect 실행전에 뭔가 실행하려면 언제나 return() => {실행할 코드입력}
+   (가끔 가다 useEffect를 싹 비워놓고싶어서 clean up function을 실행시키고 싶을때 return문에 코드입력)
+5. 특정 state변경시에만 실행하려면 [state명] 집어넣자.
+   useEffect(() => {실행할 코드입력},[count]); 변경될때, 처음 랜더링할때 실행됨
