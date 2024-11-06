@@ -15,6 +15,10 @@ let Box = styled.div`
   padding: 20px;
 `;
 
+setTimeout(() => {
+  실행할코드;
+}, 1000);
+
 function Detail(props) {
   useEffect(() => {
     console.log("안녕");
@@ -23,14 +27,7 @@ function Detail(props) {
   let { id } = useParams();
   return (
     <div className="container">
-      {count}
-      <button
-        onClick={() => {
-          setCount(count + 1);
-        }}
-      >
-        버튼
-      </button>
+      <div className="alert alert-warning">2초이내 구매시 할인</div>
       <div className="row">
         <div className="col-md-6">
           <img src={props.shoes[id].img} width="100%" alt="" />
