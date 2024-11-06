@@ -58,7 +58,7 @@ function App() {
         </Route>
         <Route path="/community" element={<div>공지사항페이지임</div>} />
         <Route path="/cart" element={<div>장바구니페이지임</div>} />
-        <Route path="/detail" element={<Detail />} />
+        <Route path="/detail/:id" element={<Detail shoes={shoes} />} />
         <Route path="*" element={<div>이 페이지는 없는 페이지입니다.</div>} />
       </Routes>
     </div>
