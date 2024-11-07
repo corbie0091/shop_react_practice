@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { Nav } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import { styled } from "styled-components";
 
 function Detail(props) {
   useEffect(() => {
@@ -12,6 +12,7 @@ function Detail(props) {
   }, []);
   let { id } = useParams();
   let [showAlert, setShowAlert] = useState(true);
+  let [tab, setTab] = useState(0);
   return (
     <div className="container">
       {showAlert && (
@@ -28,7 +29,51 @@ function Detail(props) {
           <button className="btn btn-danger">주문하기</button>
         </div>
       </div>
+      <Nav variant="tabs" defaultActiveKey="link0">
+        <Nav.Item>
+          <Nav.Link
+            onClick={() => {
+              setTab(0);
+            }}
+            eventKey="link0"
+          >
+            NavLink 1 content
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            onClick={() => {
+              setTab(1);
+            }}
+            eventKey="link1"
+          >
+            NavLink 2 content
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            onClick={() => {
+              setTab(2);
+            }}
+            eventKey="link2"
+          >
+            NavLink 3 content
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+      <TabContent tab={tab} />
     </div>
   );
 }
+
+function TabContent(props) {
+  if (props.tab === 0) {
+    return <div>내용1</div>;
+  } else if (props.tab === 1) {
+    return <div>내용2</div>;
+  } else if (props.tab === 2) {
+    return <div>내용3</div>;
+  }
+}
+
 export default Detail;

@@ -412,13 +412,13 @@ let [alert, setAlert] = useState(true);
    useEffect(() => {실행할 코드입력},[count]); 변경될때, 처음 랜더링할때 실행됨
 
 10강 상품 더보기
-AJAX를 이용해 받아올 것임 
+AJAX를 이용해 받아올 것임
 상품 더보기 버튼을 설치할 것임
 [배경지식] 서버에 데이터를 요청할 건데...
 [서버]데이터를 부탁하면 진짜로 들어주는 프로그램
 ex)유튜브 서버는 동영상 요청하면 동영상을 가져다주는 프로그램
 그래서 서버개발시에 누가 A요청하면 A를 주세요 - 근데 규격이 있어야함
-1방법(GET/POST) 2어떤자료(URL)적어보내라고 함 
+1방법(GET/POST) 2어떤자료(URL)적어보내라고 함
 ex) GET요청 하면 서버가 동영상을 보내줌
 ex) 글을 작성하고싶음 - POST요청 하면 글이 업로드가 됨
 URL경로는 서버가 알려줌
@@ -427,63 +427,137 @@ URL경로는 서버가 알려줌
 서버주소:
 https://codingapple1.github.io/shop/data2.json
 
-[참고]주소입력하는 공간 = GET요청을 날릴 수 있음 
-즉 위 주소를 주소입력공간에 붙여넣으면 받은 것을 확인 할 수 있음 
+[참고]주소입력하는 공간 = GET요청을 날릴 수 있음
+즉 위 주소를 주소입력공간에 붙여넣으면 받은 것을 확인 할 수 있음
 
 ajax를 사용해도 GET요청이 가능
-차이점: GET/POST 요청시에 새로고침이 됨   => ajax는 새로고침 없이도 GET/POST요청이 가능
+차이점: GET/POST 요청시에 새로고침이 됨 => ajax는 새로고침 없이도 GET/POST요청이 가능
 
-1. <button onClick={() => {
-        //ajax 요청
-        
-      }}>버튼</button>
-   요청부분 코드를 짤 것임
-[참고] ajax쓰려면 옵션 3개중 택1   1. XMLHttpRequest   2. fetch()  3.axios 같은거
-사람들이 많이쓰는 외부 라이브러리로 요청시도해보자
-터미널) npm install axios >  App.js) import axios from "axios" > get요청 ㄱㄱ ( axios.get() )
+1.  <button onClick={() => {
+    //ajax 요청
+    }}>버튼</button>
+    요청부분 코드를 짤 것임
+    [참고] ajax쓰려면 옵션 3개중 택1 1. XMLHttpRequest 2. fetch() 3.axios 같은거
+    사람들이 많이쓰는 외부 라이브러리로 요청시도해보자
+    터미널) npm install axios > App.js) import axios from "axios" > get요청 ㄱㄱ ( axios.get() )
 2.  ajax이용한 get요청은 axios.get('url')
-        axios.get('https://codingapple1.github.io/shop/data2.json')
-3. .then((data)=>{ data}) 을 바로 옆에 붙여서 서버에서 data로 데이터를 받아오게 됨 
-4. 일단 할 거 없으면 console.log(data)를 안에 넣어보자.
-   axios.get('https://codingapple1.github.io/shop/data2.json').then((data)=>{ console.log(data)})
-(콘솔창을 확인해보면 버튼을 누르면 받아와지는 것을 확인해볼 수 있음 ) 전체적인 데이타가 다보이게 됨 > 실질적인 데이타만 보고싶다면 ? 
-axios.get('https://codingapple1.github.io/shop/data2.json').then((data)=>{ console.log(data.data)}) 즉 data.data해주면됨
-그러면 데이터 배열만 볼 수 있음 ( 실무에서는 data.data 보단 then((result) => { result.data })) 이런식으로 많이 한다고함
-5. 마무리) 새로고침없이 get/post요청이 가능해서 리액트에선 거의 서버와 ajax 이용해서 통신합니다 
-6. [참고]Q. ajax요청 실패한 경우?
-.catch(() => {console.log('실패함') }) 으로 실패를 잡아줘야함 
+    axios.get('https://codingapple1.github.io/shop/data2.json')
+3.  .then((data)=>{ data}) 을 바로 옆에 붙여서 서버에서 data로 데이터를 받아오게 됨
+4.  일단 할 거 없으면 console.log(data)를 안에 넣어보자.
+    axios.get('https://codingapple1.github.io/shop/data2.json').then((data)=>{ console.log(data)})
+    (콘솔창을 확인해보면 버튼을 누르면 받아와지는 것을 확인해볼 수 있음 ) 전체적인 데이타가 다보이게 됨 > 실질적인 데이타만 보고싶다면 ?
+    axios.get('https://codingapple1.github.io/shop/data2.json').then((data)=>{ console.log(data.data)}) 즉 data.data해주면됨
+    그러면 데이터 배열만 볼 수 있음 ( 실무에서는 data.data 보단 then((result) => { result.data })) 이런식으로 많이 한다고함
+5.  마무리) 새로고침없이 get/post요청이 가능해서 리액트에선 거의 서버와 ajax 이용해서 통신합니다
+6.  [참고]Q. ajax요청 실패한 경우?
+    .catch(() => {console.log('실패함') }) 으로 실패를 잡아줘야함
 
 11강 데이터 가져와서 html로 보여주기
 쌩 자바스크립트는 html만들어주세요~ 이렇게지만 리액트는 스위치를 조작함
-shoes라는 state를 조절하면 그에 맞게 컴포넌트 생성이 될 것임 
+shoes라는 state를 조절하면 그에 맞게 컴포넌트 생성이 될 것임
 즉, shoes라는 state에 데이터를 추가만 해준다면 알아서 컴포넌트 6개가 생성될 것임
-        .then((result)=>{ console.log(result.data)
-        // shoes에 가져온 데이터를 추가해줘요
-        console.log(shoes); 
-        // [ {}, {}, {}, {}, {}, {}] 으로 되도록해야함 concat방법이 있음 또는
-        let copy = [...shoes, ...result.data];
-        console.log(copy);
-        setShoes(copy)
-      })
-이런식으로 setShoes를 활용해 복사본을 다시 넣는 방식으로 진행 
+.then((result)=>{ console.log(result.data)
+// shoes에 가져온 데이터를 추가해줘요
+console.log(shoes);
+// [ {}, {}, {}, {}, {}, {}] 으로 되도록해야함 concat방법이 있음 또는
+let copy = [...shoes, ...result.data];
+console.log(copy);
+setShoes(copy)
+})
+이런식으로 setShoes를 활용해 복사본을 다시 넣는 방식으로 진행
 [응용1]버튼 2회 누를 때는 7,8,9번 상품 가져오러면? (버튼 누른 횟수를 저징시키는 방법으로 정리하면 될듯)
 [응용2]버튼 3회 누를 때는 성품이 더 없다고 말해주기 (조건문을 활용)
-[응용3]버튼 누르면 로딩중입니다 글자 띄우기 ( axios.get함수 이전에 로딩중UI띄우기함수 axios.get()  로딩중UI숨기기함수 이런순으로 하면 될듯 + catch에도 로딩중UI숨기기함수를 추가해야할듯 왜냐면 중간에 자료가 안받아졌을때를 생각해야하기때문 - finally쓰면 안되려나? )
+[응용3]버튼 누르면 로딩중입니다 글자 띄우기 ( axios.get함수 이전에 로딩중UI띄우기함수 axios.get() 로딩중UI숨기기함수 이런순으로 하면 될듯 + catch에도 로딩중UI숨기기함수를 추가해야할듯 왜냐면 중간에 자료가 안받아졌을때를 생각해야하기때문 - finally쓰면 안되려나? )
 
 ajax요청에 대한 추가적인 부분
 서버에 전송할때 POST요청을 진행 (서버로 보낼때 )
-ex) axios.post('/eqcssq(url부분)', {name: 'kim'}(데이터))  자유롭게 객체자료형을 보낼 수 있게 됨
+ex) axios.post('/eqcssq(url부분)', {name: 'kim'}(데이터)) 자유롭게 객체자료형을 보낼 수 있게 됨
 실제로 받아올 서버는 없기 때문에 가져다 쓰기만 하면 됨
-[참고] 동시에 ajax요청하려면 axios.get('/url1')   axios.get('/url2')을 동시에 요청?
-Promise.all([ axios.get('url/1'),axios.get('/url2')]) 동시에 get요청을 보낼 수 있음
-그리고 이게 다 전부다 성공했을 경우에 안에있는 코드를 실행시키고 싶다면 .then()을 똑같이 붙이면 됨 
-[물론] axios.get('/url1')   axios.get('/url2') 나란히 써도 되겠지만 다 성공했을 때 실행하게 해주세요가 어려움 
+[참고] 동시에 ajax요청하려면 axios.get('/url1') axios.get('/url2')을 동시에 요청?
+=> Promise.all([ axios.get('url/1'),axios.get('/url2')]) 동시에 get요청을 보낼 수 있음
+그리고 이게 다 전부다 성공했을 경우에 안에있는 코드를 실행시키고 싶다면 .then()을 똑같이 붙이면 됨
+[물론] axios.get('/url1') axios.get('/url2') 나란히 써도 되겠지만 "다 성공했을 때 실행하게 해주세요"가 어려움
 
 [참고] 서버랑 데이터를 주고받을때 무조건 문자만 주고받을 수 있습니다. - 방금 서버에서 array온거 같은데 무슨소리??
 "{"name":"kim"}" 이렇게 따옴표 쳐놓으면 문자로 인식-> 배열 객체도 주고받기가 가능해짐 <-일명 JSON (문자취급을 받을 수 있어서 편리함)
-즉, data를 처음 받았을 때 JSON형식으로 받아옴 -> 이것을 axios가 자동으로 array로 바꿔준 것임 
+즉, data를 처음 받았을 때 JSON형식으로 받아옴 -> 이것을 axios가 자동으로 array로 바꿔준 것임
 
 [참고]fetch()
 그냥 JS기본 문법으로도 GET요청가능 (기본 라이브러리 문법)
-하지만 .then(result => result.JSON())   .then( data=> {}) 이런식으로 코드를 추가해줘야함 
+하지만 .then(result => result.JSON()) .then( data=> {}) 이런식으로 코드를 추가해줘야함
 fetch로 데이터를 가져오면 그대로 JSON만을 출력해주기 때문에 array로 바꿔줄 코드가 필요한 것임 -> 그래서 axios가 편한 것임
+
+12강 Tab 만들기
+상세정보 / 리뷰 / Q & A / 반품/교환정보 등의 탭을 만드는 것임
+이와 같이 탭만들어보기
+탭UI만들기 - 그냥 모달창 3개 있다고 생각하면 됨
+
+1. html css로 미리 디자인
+   그냥 <button>으로 해놓으면 멋이 없음 .. 리액트 부트스트랩에 들어가서 Nav라고 검색해서 복붙 ㄱㄱ
+
+<Nav variant="tabs" defaultActiveKey="link0">
+        <Nav.Item>
+          <Nav.Link eventKey="link0">NavLink 1 content</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="link1">NavLink 2 content</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="link2">NavLink 3 content</Nav.Link>
+        </Nav.Item>
+      </Nav>
+Nav라는 태그를 쓸때 
+[유의점] 버튼마다 eventKey를 써야함 (다르게 작명)
+defaultActiveKey 처음 기본으로 눌려있을 버튼을 정함 ( eventKey중에 아무거나 집어 넣으면 됨 )
+
+2. 이후 탭의 내용들도 <div></div>태그로 해놓으면 됨
+<div>내용1</div>
+<div>내용2</div>
+<div>내용3</div>
+
+3. 탭 상태 저장해둘 state필요
+   let [ tab, setTab] = useState(0) <- 0번째 내용 보이는 상태
+   초기 값은 0 으로 해놓으면 좋을듯
+   (즉, 탭 UI조작 스위치 완성임)
+
+4. state에 따라서 UI가 어떻게 보일지 작성
+   state가 0이면 내용1이보이고 state가 1이면 내용2가 보이고 ... 이렇게 조건문을 걸어주면 됨
+   {tab == 0 ? <div>내용1</div> : null}
+   {tab == 1 ? <div>내용2</div> : null}
+   {tab == 2 ? <div>내용3</div> : null}
+   이렇게 삼항연산자를 여러개 걸어줘도 되긴함.
+   하지만 이렇게하면 코드가 복잡해보임
+
+5. 함수형 컴포넌트를 밖에 만들고 그 컴포넌트를 Nav버튼 밑에 두게끔 리턴문에서 사용
+   function TabContent(props) {
+   if (props.tab === 0) {
+   return <div>내용1</div>;
+   } else if (props.tab === 1) {
+   return <div>내용2</div>;
+   } else if (props.tab === 2) {
+   return <div>내용3</div>;
+   }
+   }
+   [주의] TabContent(tab)으로 하는게 아니라 (props)로 받고 이를 props.tab으로 안의 조건문들을 완성시켜야함
+   [주의] 그리고 <div>태그로 html보여줄때 return문을 걸어야함
+   [팁1]props. 어쩌구가 귀찮으면 props의 축약버전으로 {tab} 이렇게 하면 tab으로 바로 쓸 수 있음.
+   2개라면 {tab, tab2}이런식으로 받을 수 있음
+
+<TabContent tab={tab} /> 이런식으로 설정
+
+6. 이후 onClick으로 setTab에 변수를 변경시키면
+   <Nav.Link
+   onClick={() => {
+   setTab(1);
+   }}
+   eventKey="link1" >
+
+7. 버튼을 클릭할 때마다 변경이 되는 모습을 볼 수 있음
+
+[팁2]-편법 센스 좋으면 if문 필요없을 수도
+function TabContent({tab}) {
+return [<div>내용1</div>, <div>내용2</div>, <div>내용3</div>][tab]
+}
+array자료형으로 밀어넣고
+tab이라는 state가 0이면 내용1이 보이고
+2이면 내용3이 보이도록 할 수도 있음
