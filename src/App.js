@@ -9,7 +9,7 @@ import About from "./routes/About.js";
 import axios from "axios";
 
 function App() {
-  let [shoes] = useState(data); // data.js파일에서 import
+  let [shoes, setShoes] = useState(data); // data.js파일에서 import
 
   let navigate = useNavigate();
   return (
@@ -51,7 +51,7 @@ function App() {
       </Navbar>
 
       <Routes>
-        <Route path="/" element={<MainPage shoes={shoes} />} />
+        <Route path="/" element={<MainPage shoes={shoes} setShoes={setShoes} />} />
         <Route path="/shop" element={<div>옷페이지임</div>} />
         <Route path="/about" element={<About />}>
           <Route path="member" element={<div>맴버임</div>} />
@@ -66,7 +66,7 @@ function App() {
   );
 }
 
-function MainPage({ shoes }) {
+function MainPage({ shoes, setShoes }) {
   return (
     <>
       <div className="main-bg" style={{ backgroundImage: `url(${bg})` }}></div>
@@ -79,9 +79,13 @@ function MainPage({ shoes }) {
         </div>
       </div>
       <button onClick={() => {
-        //ajax 요청 _ ajax이용한 get요청은 axios.get('url')
-        axios.get('https://codingapple1.github.io/shop/data2.json').then((result)=>{ console.log(result.data)}).catch(()=>{ console.log('실패함')})
-
+        axios.get('https://codingapple1.github.io/shop/data2.json')
+        .then((result)=>{ console.log(result.data)
+        let copy = [...shoes, ...result.data];
+        setShoes(copy)
+      })
+        .catch(()=>{ console.log('실패함')})
+        
       }}>버튼</button>
     </>
   );

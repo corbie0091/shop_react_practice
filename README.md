@@ -452,3 +452,38 @@ axios.get('https://codingapple1.github.io/shop/data2.json').then((data)=>{ conso
 5. 마무리) 새로고침없이 get/post요청이 가능해서 리액트에선 거의 서버와 ajax 이용해서 통신합니다 
 6. [참고]Q. ajax요청 실패한 경우?
 .catch(() => {console.log('실패함') }) 으로 실패를 잡아줘야함 
+
+11강 데이터 가져와서 html로 보여주기
+쌩 자바스크립트는 html만들어주세요~ 이렇게지만 리액트는 스위치를 조작함
+shoes라는 state를 조절하면 그에 맞게 컴포넌트 생성이 될 것임 
+즉, shoes라는 state에 데이터를 추가만 해준다면 알아서 컴포넌트 6개가 생성될 것임
+        .then((result)=>{ console.log(result.data)
+        // shoes에 가져온 데이터를 추가해줘요
+        console.log(shoes); 
+        // [ {}, {}, {}, {}, {}, {}] 으로 되도록해야함 concat방법이 있음 또는
+        let copy = [...shoes, ...result.data];
+        console.log(copy);
+        setShoes(copy)
+      })
+이런식으로 setShoes를 활용해 복사본을 다시 넣는 방식으로 진행 
+[응용1]버튼 2회 누를 때는 7,8,9번 상품 가져오러면? (버튼 누른 횟수를 저징시키는 방법으로 정리하면 될듯)
+[응용2]버튼 3회 누를 때는 성품이 더 없다고 말해주기 (조건문을 활용)
+[응용3]버튼 누르면 로딩중입니다 글자 띄우기 ( axios.get함수 이전에 로딩중UI띄우기함수 axios.get()  로딩중UI숨기기함수 이런순으로 하면 될듯 + catch에도 로딩중UI숨기기함수를 추가해야할듯 왜냐면 중간에 자료가 안받아졌을때를 생각해야하기때문 - finally쓰면 안되려나? )
+
+ajax요청에 대한 추가적인 부분
+서버에 전송할때 POST요청을 진행 (서버로 보낼때 )
+ex) axios.post('/eqcssq(url부분)', {name: 'kim'}(데이터))  자유롭게 객체자료형을 보낼 수 있게 됨
+실제로 받아올 서버는 없기 때문에 가져다 쓰기만 하면 됨
+[참고] 동시에 ajax요청하려면 axios.get('/url1')   axios.get('/url2')을 동시에 요청?
+Promise.all([ axios.get('url/1'),axios.get('/url2')]) 동시에 get요청을 보낼 수 있음
+그리고 이게 다 전부다 성공했을 경우에 안에있는 코드를 실행시키고 싶다면 .then()을 똑같이 붙이면 됨 
+[물론] axios.get('/url1')   axios.get('/url2') 나란히 써도 되겠지만 다 성공했을 때 실행하게 해주세요가 어려움 
+
+[참고] 서버랑 데이터를 주고받을때 무조건 문자만 주고받을 수 있습니다. - 방금 서버에서 array온거 같은데 무슨소리??
+"{"name":"kim"}" 이렇게 따옴표 쳐놓으면 문자로 인식-> 배열 객체도 주고받기가 가능해짐 <-일명 JSON (문자취급을 받을 수 있어서 편리함)
+즉, data를 처음 받았을 때 JSON형식으로 받아옴 -> 이것을 axios가 자동으로 array로 바꿔준 것임 
+
+[참고]fetch()
+그냥 JS기본 문법으로도 GET요청가능 (기본 라이브러리 문법)
+하지만 .then(result => result.JSON())   .then( data=> {}) 이런식으로 코드를 추가해줘야함 
+fetch로 데이터를 가져오면 그대로 JSON만을 출력해주기 때문에 array로 바꿔줄 코드가 필요한 것임 -> 그래서 axios가 편한 것임
