@@ -6,6 +6,7 @@ import data from "./data/data.js";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Detail from "./routes/Detail.js";
 import About from "./routes/About.js";
+import axios from "axios";
 
 function App() {
   let [shoes] = useState(data); // data.js파일에서 import
@@ -40,7 +41,7 @@ function App() {
             </Nav.Link>
             <Nav.Link
               onClick={() => {
-                navigate("/detail");
+                navigate("/cart");
               }}
             >
               CART
@@ -77,6 +78,11 @@ function MainPage({ shoes }) {
           ))}
         </div>
       </div>
+      <button onClick={() => {
+        //ajax 요청 _ ajax이용한 get요청은 axios.get('url')
+        axios.get('https://codingapple1.github.io/shop/data2.json').then((result)=>{ console.log(result.data)}).catch(()=>{ console.log('실패함')})
+
+      }}>버튼</button>
     </>
   );
 }

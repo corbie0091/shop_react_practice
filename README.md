@@ -410,3 +410,45 @@ let [alert, setAlert] = useState(true);
    (가끔 가다 useEffect를 싹 비워놓고싶어서 clean up function을 실행시키고 싶을때 return문에 코드입력)
 5. 특정 state변경시에만 실행하려면 [state명] 집어넣자.
    useEffect(() => {실행할 코드입력},[count]); 변경될때, 처음 랜더링할때 실행됨
+
+10강 상품 더보기
+AJAX를 이용해 받아올 것임 
+상품 더보기 버튼을 설치할 것임
+[배경지식] 서버에 데이터를 요청할 건데...
+[서버]데이터를 부탁하면 진짜로 들어주는 프로그램
+ex)유튜브 서버는 동영상 요청하면 동영상을 가져다주는 프로그램
+그래서 서버개발시에 누가 A요청하면 A를 주세요 - 근데 규격이 있어야함
+1방법(GET/POST) 2어떤자료(URL)적어보내라고 함 
+ex) GET요청 하면 서버가 동영상을 보내줌
+ex) 글을 작성하고싶음 - POST요청 하면 글이 업로드가 됨
+URL경로는 서버가 알려줌
+서버에 get요청을 해서 받아오도록 해보자.
+
+서버주소:
+https://codingapple1.github.io/shop/data2.json
+
+[참고]주소입력하는 공간 = GET요청을 날릴 수 있음 
+즉 위 주소를 주소입력공간에 붙여넣으면 받은 것을 확인 할 수 있음 
+
+ajax를 사용해도 GET요청이 가능
+차이점: GET/POST 요청시에 새로고침이 됨   => ajax는 새로고침 없이도 GET/POST요청이 가능
+
+1. <button onClick={() => {
+        //ajax 요청
+        
+      }}>버튼</button>
+   요청부분 코드를 짤 것임
+[참고] ajax쓰려면 옵션 3개중 택1   1. XMLHttpRequest   2. fetch()  3.axios 같은거
+사람들이 많이쓰는 외부 라이브러리로 요청시도해보자
+터미널) npm install axios >  App.js) import axios from "axios" > get요청 ㄱㄱ ( axios.get() )
+2.  ajax이용한 get요청은 axios.get('url')
+        axios.get('https://codingapple1.github.io/shop/data2.json')
+3. .then((data)=>{ data}) 을 바로 옆에 붙여서 서버에서 data로 데이터를 받아오게 됨 
+4. 일단 할 거 없으면 console.log(data)를 안에 넣어보자.
+   axios.get('https://codingapple1.github.io/shop/data2.json').then((data)=>{ console.log(data)})
+(콘솔창을 확인해보면 버튼을 누르면 받아와지는 것을 확인해볼 수 있음 ) 전체적인 데이타가 다보이게 됨 > 실질적인 데이타만 보고싶다면 ? 
+axios.get('https://codingapple1.github.io/shop/data2.json').then((data)=>{ console.log(data.data)}) 즉 data.data해주면됨
+그러면 데이터 배열만 볼 수 있음 ( 실무에서는 data.data 보단 then((result) => { result.data })) 이런식으로 많이 한다고함
+5. 마무리) 새로고침없이 get/post요청이 가능해서 리액트에선 거의 서버와 ajax 이용해서 통신합니다 
+6. [참고]Q. ajax요청 실패한 경우?
+.catch(() => {console.log('실패함') }) 으로 실패를 잡아줘야함 
