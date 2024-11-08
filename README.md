@@ -682,3 +682,34 @@ Redux : 컴포넌트들이 props없이 state공유가능
       );
       6. 셋팅4. import {store} from "./store.js" 쓰기
       7. 이후 모든 자식들은 store에 있던 state전부 사용가능해짐 
+
+[문제]Q. 기본 내보내기 / 명명된 내보내기
+1. 기본 내보내기 (Default Export)
+파일당 하나의 값만 기본으로 내보낼 수 있습니다.
+주로 모듈에서 가장 중요한 함수, 클래스, 객체 등을 내보낼 때 사용됩니다.
+기본 내보내기를 가져올 때는 임의의 이름으로 불러올 수 있습니다.
+ex)store.js]// store를 기본 내보내기로 설정
+const store = configureStore({
+    reducer: {
+        // 여기에 리듀서 추가
+    }
+});
+export default store;
+index.js] // 기본 내보내기 가져오기: 원하는 이름으로 가져올 수 있음
+import store from "./store.js";
+기본 내보내기는 항상 import [이름] from "파일경로"의 형태로 가져오며, store라는 이름은 파일 내에서 정한 것이 아니므로 다른 이름으로도 가져올 수 있습니다.
+
+2. 명명된 내보내기 (Named Export)
+파일 내에서 여러 개의 값을 명명된 내보내기로 내보낼 수 있습니다.
+export const 또는 export function과 같은 방식으로 내보내기를 지정합니다.
+가져올 때 반드시 내보낸 이름 그대로 가져와야 합니다.
+ex) store.js]
+// store를 명명된 내보내기로 설정
+export const store = configureStore({
+    reducer: {
+        // 여기에 리듀서 추가
+    }
+});
+index.js] // 명명된 내보내기 가져오기: 반드시 내보낸 이름 그대로 가져와야 함
+import { store } from "./store.js";
+명명된 내보내기는 import { [이름] } from "파일경로"의 형태로 가져오며, 대괄호 {}를 사용해야 합니다. 이름을 다르게 가져올 수 없고, 정확하게 store로 가져와야 합니다.
