@@ -73,6 +73,7 @@ useContext(Context1)
 function TabContent({tab, shoes}) {
 
    let [storage] = useContext(Context1);
-    return <div>{shoes[tab].title}</div>;
+    return <div>{shoes[tab].title}
+                {storage}</div>;
 }
 export default Detail;

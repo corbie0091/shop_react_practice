@@ -619,3 +619,66 @@ function TabContent({tab, shoes}) {
 [단점] 1. state변경시 쓸데없는 것까지 재랜더링 {storage}안쓰는 놈들도 무조건 재랜더링이 됨 + 자식컴포넌트까지 비효율적으로 재랜더링됨
 [단점] 2. 나중에 컴포넌트 재사용이 어려움 Context1이 없다고 하고 막... 그렇게 될 수 있음
 [요약] 간단한 프로젝트에는 사용하기 편하긴 하겠으나 , 보통은 Redux같은 외부라이브러리를 사용한다고 함. 
+
+14강
+장바구니페이지만들기 & Redux 1: Redux Tookit설치
+장바구니페이지: 표 레이아웃으로 만들것임 ( routes/Cart.js만들어서 Routes element에 붙일 것임)
+리액트 부트스트랩에서 복붙할 것임-  <Table>태그 활용 import / export설정해주면 됨
+Table태그 
+   1. tr 넣으면 가로줄 생김 
+      1-1. th, td 넣으면 열 하나가 생김 4개쓰면 4열이만들어짐
+   2. td 넣으면 세로줄이 생김
+      2-1 td 로 줄이 생김 
+   3. thead는 맨 윗줄
+   4. tbody는 몸통부분 ( 액셀 표 부분 생각 )
+
+        <div>
+            <Table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>상품명</th>
+                    <th>수량</th>
+                    <th>변경하기</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>안녕</td>
+                    <td>안녕</td>
+                    <td>안녕</td>
+                </tr>
+            </tbody>
+            </Table>
+        </div>
+
+장바구니데이터를 state에 보관해두고 데이터바인딩해봅시다. ( 맨날맨날변동 될테니 )
+[문제] Q장바구니 state가 App, Detail, Cart에 필요하면 state를 어디 만들어야하나요? - props전송이 귀찮아짐
+[해결] Redux ! ( props전송없이도 가능 )
+
+Redux : 컴포넌트들이 props없이 state공유가능
+[특징] redux store.js파일을 만들고 거기에 state를 모두 저장시킴 이걸 모든컴포넌트들이 직접 가져서 쓸 수 있게 됨
+[특징] 대규모 프로젝트에 적합해서 리액트 구인시 대부분 Redux 요구
+[설치] 1. Redux 라이브러리 설치 (react, reactdom 18.1버전이상)
+      2. npm install @reduxjs/toolkit react-redux 터미널에 입력
+      3. 셋팅1. store.js파일생성
+      4. 셋팅2. 코드 복붙
+      import { configureStore } from "@reduxjs/toolkit";
+
+      export default configureStore ({
+         reducer: {  
+         }
+      })
+      5. 셋팅3. index.js가서 <Provider store={store}>쓰기 
+      root.render(
+         <React.StrictMode>
+           <Provider store={store}>
+           <BrowserRouter>
+             <App />
+           </BrowserRouter>
+           </Provider>
+         </React.StrictMode>
+      );
+      6. 셋팅4. import {store} from "./store.js" 쓰기
+      7. 이후 모든 자식들은 store에 있던 state전부 사용가능해짐 
