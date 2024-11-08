@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Nav } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import {Context1} from "../App.js"
 
 function Detail(props) {
+
+useContext(Context1)
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowAlert(false);
@@ -61,19 +65,14 @@ function Detail(props) {
           </Nav.Link>
         </Nav.Item>
       </Nav>
-      <TabContent tab={tab} />
+      <TabContent tab={tab} shoes={props.shoes}/>
     </div>
   );
 }
 
-function TabContent(props) {
-  if (props.tab === 0) {
-    return <div>내용1</div>;
-  } else if (props.tab === 1) {
-    return <div>내용2</div>;
-  } else if (props.tab === 2) {
-    return <div>내용3</div>;
-  }
-}
+function TabContent({tab, shoes}) {
 
+   let [storage] = useContext(Context1);
+    return <div>{shoes[tab].title}</div>;
+}
 export default Detail;

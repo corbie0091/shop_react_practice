@@ -1,16 +1,18 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import "./App.css";
 import bg from "./img/bg.png";
-import { useState } from "react";
+import { createContext, useState } from "react";
 import data from "./data/data.js";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Detail from "./routes/Detail.js";
 import About from "./routes/About.js";
 import axios from "axios";
 
+export let Context1 = createContext();
+
 function App() {
   let [shoes, setShoes] = useState(data); // data.js파일에서 import
-
+  let [storage] = useState([10, 11, 12]); 
   let navigate = useNavigate();
   return (
     <div className="App">
@@ -59,7 +61,11 @@ function App() {
         </Route>
         <Route path="/community" element={<div>공지사항페이지임</div>} />
         <Route path="/cart" element={<div>장바구니페이지임</div>} />
-        <Route path="/detail/:id" element={<Detail shoes={shoes} />} />
+        <Route path="/detail/:id" element={
+        <Context1.Provider value={{storage, shoes}}>
+          <Detail shoes={shoes}/>
+        </Context1.Provider>
+           } />
         <Route path="*" element={<div>이 페이지는 없는 페이지입니다.</div>} />
       </Routes>
     </div>

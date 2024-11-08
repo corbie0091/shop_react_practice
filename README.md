@@ -561,3 +561,61 @@ return [<div>내용1</div>, <div>내용2</div>, <div>내용3</div>][tab]
 array자료형으로 밀어넣고
 tab이라는 state가 0이면 내용1이 보이고
 2이면 내용3이 보이도록 할 수도 있음
+
+
+13강 Context API (props가 싫으면..)
+Single Page Application단점:
+컴포넌트간 state공유가 어려움 
+예를 들어 function About() {} function Card() {} 이렇게 같은 파일에 2개 컴포넌트 있으면 공유가 어려웠음
+[참고] 하지만 부모컴포넌트 -> 자식 컴포넌트 식으로 props전송은 가능 해서 이런식으로 해야할 수 밖에 없음
+<App>
+<Detail>
+<TabCon>
+</TabCon>
+</Detail>
+</App>
+이런 구조라면 App컴포넌트의 shoes를 TabCon으로 넘기려면 차례대로 넘길 수 밖에 없음
+Q. shoes를 TabCon컴포넌트 안에서 쓰려면?
+[답] <TabContent shoes={props.shoes}, tab={tab} />
+   ... 
+function TabContent({tab, shoes}) {
+    return <div>{shoes[tab].title}</div>;
+}
+지금은 3중첩밖에 안되어 있어서 그렇지 만약 컴포넌트가 10번중첩이 되었다면? 9번10번 props를 써야함..
+
+props싫으면
+1. ContextAPI(리액트 기본문법) 2. Redux등 외부라이브러리
+ContextAPI쓰면 props전송없이 state공유가능 - 실전에서는 많이 쓰지는 않음
+[단점] 1. 성능이슈 2. 컴포넌트 재활용이 어려움 
+즉 그냥 일단 알고만 넘어가자..
+1. App.js) let [storage] = useState([10, 11, 12]); 새 state추가
+2. Detail, TabComponent에서 쓰고싶음 > 코드 어떻게?? 
+3. props쓰면 되겠지만 ContextAPI를 써보자(이러면 자식은 props없이 state사용가능)
+4(셋팅1). App 컴포넌트 밖에 let Context1 = createContext(); // 컨텍스트를 하나 만든다 =   즉 컨텍스트는 보관함이라고 생각 ㄱ
+5(셋팅2). <Context>로 원하는 컴포넌트 감싸기 
+<Route path="/detail/:id" element={
+        <Context1.Provider >
+          <Detail shoes={shoes}/>
+        </Context1.Provider>
+           } />
+
+6(셋팅3). value={{ state1, state2 ...}}
+ <Context1.Provider value={{storage, shoes}}>이런식으로 코드 짜주면 됨
+7.이러면 보관함으로 감싼 <Detail> 여기 안의 모든 컴포넌트는 storage, shoes가 사용가능해진다.
+8. state사용은 1. Context를 import  ,   ( export let Context1 = createContext(); export키워드 붙여주자)
+import {Context1} from "./../App.js"
+9. state사용은 2. useContext(Context) ( 보관함을 해체해주는 함수임 react임포트 걸어야함 )
+(콘솔에 출력해보면 자료들이 나열되어 있음 )
+10. 디스트럭쳐링문법으로 let {storage, shoes} = useContext(Context1); 이렇게 쓰면 html아무데나 state가 잘나옴
+11. 이제 props없이 state사용이 가능해짐 + Detail 뿐만 아니라 그 자식들도 props없이 사용이 가능해진다.
+ 
+function TabContent({tab, shoes}) {
+
+   let [storage] = useContext(Context1); // 추가된 코드
+    return <div>{shoes[tab].title}</div>;
+}
+이런식으로 사용하면 됨 ( 자손 컴포넌트도 state를 편리하게 이용함 )
+[참고] 편한지 모르겠다면 쓰지마셈 
+[단점] 1. state변경시 쓸데없는 것까지 재랜더링 {storage}안쓰는 놈들도 무조건 재랜더링이 됨 + 자식컴포넌트까지 비효율적으로 재랜더링됨
+[단점] 2. 나중에 컴포넌트 재사용이 어려움 Context1이 없다고 하고 막... 그렇게 될 수 있음
+[요약] 간단한 프로젝트에는 사용하기 편하긴 하겠으나 , 보통은 Redux같은 외부라이브러리를 사용한다고 함. 
