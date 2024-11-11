@@ -705,11 +705,85 @@ export const 또는 export function과 같은 방식으로 내보내기를 지�
 가져올 때 반드시 내보낸 이름 그대로 가져와야 합니다.
 ex) store.js]
 // store를 명명된 내보내기로 설정
-export const store = configureStore({
+export const store = configureStore({ 
     reducer: {
-        // 여기에 리듀서 추가
+        
     }
 });
 index.js] // 명명된 내보내기 가져오기: 반드시 내보낸 이름 그대로 가져와야 함
 import { store } from "./store.js";
 명명된 내보내기는 import { [이름] } from "파일경로"의 형태로 가져오며, 대괄호 {}를 사용해야 합니다. 이름을 다르게 가져올 수 없고, 정확하게 store로 가져와야 합니다.
+
+15강. Redux 2 : store에 state보관하고 쓰는 법
+Redux왜씀? : 컴포넌트간 state공유가 편해짐 (직접통신해서 고류함 - props전송이 필요없음)
+ex) store.js]
+import { configureStore, createSlice } from "@reduxjs/toolkit";
+
+// useState같은걸 store밖에 만듬
+let user = createSlice({
+   name : 'state이름',
+   initialState : 'kim"
+})
+
+export default configureStore ({
+    reducer: {
+        // 여기에 리듀서 추가 (등록해야 사용가능함 createSlice가 다가 아님)
+        작명 : user.reducer   // user : user.reducer이렇게 해도 됨 
+    }
+})
+이렇게 사용하면 됨 갖다 써볼 것임 = useSelector()훅을 씀 )( Redux store 가져와줌 )
+ex) Cart.js]
+
+function Cart() {
+
+    let a = useSelector((state) => {return state})
+    ..}
+이런식으로 변수에 설정해놓으면 ( 화살표함수 형식은 문법임 + 변수에 저장해놓기 ) 
+콘솔창에 해보면 유저가 잘 출력되는 것을 확인할 수 있음 
+console.log(a)       // {user: 'kim'}
+console.log(a.user)  // kim부분만 출력됨 ( object데이터이므로 이런식으로 접근도 가능 )
+
+즉 컴포넌트가 많아지면 리덕스로 props전송이 편해질 수 있음 
+
+// useState역할
+let user = createSlice({
+    name : 'user',
+    initialState : "kim"
+})
+
+let stock = createSlice({
+    name : 'stock',
+    initialState: [10, 11, 12]
+})
+
+export default configureStore ({
+    reducer: {
+        user : user.reducer,
+        stock : stock.reducer
+    }
+})
+이렇게 저장도 가능 
+
+[참고]
+let a = useSelector((state) => {return state})
+여기서 state부분은 store안에 있던 모든 state가 됨 - 즉 어떤 state , 원하는 부분만 나올 수 있도록 할 수 있음 
+let a = useSelector((state) => {return state.user})
+console.log(a) // kim만 남음 
+let a = useSelector((state) => {return state.stock})
+console.log(a) // [10, 11, 12]만 나옴 
+[참고] useSelecto편하게 쓰려면 return이 생략할 수 있다 
+let a = useSelector((state) => {return state.stock}) 
+let a = useSelector((state) => state)
+
+[문제]
+Redu쓰면 편한데 Props왜 씀? - 코드가 더 길어버려짐 
+간단한 프로젝트는 그냥 props가 좋음 
+하지만 10개 20개 넘거자면 Redux가 나을듯 
+
+[참고]
+Redux쓴다고해서 모든 state를 store에 넣지맙시다
+즉 컴포넌트간 공유가 필요 없다면  
+안에서만 사용 하면 그냥 useState()써도 됨 
+
+[다음강의예고]
+강의 하단 데이터를 store에 보관하고 장바구니 페이지에서 데이터 바인딩하기 
