@@ -562,10 +562,9 @@ array자료형으로 밀어넣고
 tab이라는 state가 0이면 내용1이 보이고
 2이면 내용3이 보이도록 할 수도 있음
 
-
 13강 Context API (props가 싫으면..)
 Single Page Application단점:
-컴포넌트간 state공유가 어려움 
+컴포넌트간 state공유가 어려움
 예를 들어 function About() {} function Card() {} 이렇게 같은 파일에 2개 컴포넌트 있으면 공유가 어려웠음
 [참고] 하지만 부모컴포넌트 -> 자식 컴포넌트 식으로 props전송은 가능 해서 이런식으로 해야할 수 밖에 없음
 <App>
@@ -577,81 +576,78 @@ Single Page Application단점:
 이런 구조라면 App컴포넌트의 shoes를 TabCon으로 넘기려면 차례대로 넘길 수 밖에 없음
 Q. shoes를 TabCon컴포넌트 안에서 쓰려면?
 [답] <TabContent shoes={props.shoes}, tab={tab} />
-   ... 
+...
 function TabContent({tab, shoes}) {
-    return <div>{shoes[tab].title}</div>;
+return <div>{shoes[tab].title}</div>;
 }
 지금은 3중첩밖에 안되어 있어서 그렇지 만약 컴포넌트가 10번중첩이 되었다면? 9번10번 props를 써야함..
 
 props싫으면
+
 1. ContextAPI(리액트 기본문법) 2. Redux등 외부라이브러리
-ContextAPI쓰면 props전송없이 state공유가능 - 실전에서는 많이 쓰지는 않음
-[단점] 1. 성능이슈 2. 컴포넌트 재활용이 어려움 
-즉 그냥 일단 알고만 넘어가자..
+   ContextAPI쓰면 props전송없이 state공유가능 - 실전에서는 많이 쓰지는 않음
+   [단점] 1. 성능이슈 2. 컴포넌트 재활용이 어려움
+   즉 그냥 일단 알고만 넘어가자..
 1. App.js) let [storage] = useState([10, 11, 12]); 새 state추가
-2. Detail, TabComponent에서 쓰고싶음 > 코드 어떻게?? 
-3. props쓰면 되겠지만 ContextAPI를 써보자(이러면 자식은 props없이 state사용가능)
-4(셋팅1). App 컴포넌트 밖에 let Context1 = createContext(); // 컨텍스트를 하나 만든다 =   즉 컨텍스트는 보관함이라고 생각 ㄱ
-5(셋팅2). <Context>로 원하는 컴포넌트 감싸기 
-<Route path="/detail/:id" element={
-        <Context1.Provider >
-          <Detail shoes={shoes}/>
-        </Context1.Provider>
-           } />
+1. Detail, TabComponent에서 쓰고싶음 > 코드 어떻게??
+1. props쓰면 되겠지만 ContextAPI를 써보자(이러면 자식은 props없이 state사용가능)
+   4(셋팅1). App 컴포넌트 밖에 let Context1 = createContext(); // 컨텍스트를 하나 만든다 = 즉 컨텍스트는 보관함이라고 생각 ㄱ
+   5(셋팅2). <Context>로 원하는 컴포넌트 감싸기
+   <Route path="/detail/:id" element={
+   <Context1.Provider >
+   <Detail shoes={shoes}/>
+   </Context1.Provider>
+   } />
 
 6(셋팅3). value={{ state1, state2 ...}}
- <Context1.Provider value={{storage, shoes}}>이런식으로 코드 짜주면 됨
-7.이러면 보관함으로 감싼 <Detail> 여기 안의 모든 컴포넌트는 storage, shoes가 사용가능해진다.
-8. state사용은 1. Context를 import  ,   ( export let Context1 = createContext(); export키워드 붙여주자)
-import {Context1} from "./../App.js"
-9. state사용은 2. useContext(Context) ( 보관함을 해체해주는 함수임 react임포트 걸어야함 )
-(콘솔에 출력해보면 자료들이 나열되어 있음 )
-10. 디스트럭쳐링문법으로 let {storage, shoes} = useContext(Context1); 이렇게 쓰면 html아무데나 state가 잘나옴
-11. 이제 props없이 state사용이 가능해짐 + Detail 뿐만 아니라 그 자식들도 props없이 사용이 가능해진다.
- 
+<Context1.Provider value={{storage, shoes}}>이런식으로 코드 짜주면 됨 7.이러면 보관함으로 감싼 <Detail> 여기 안의 모든 컴포넌트는 storage, shoes가 사용가능해진다. 8. state사용은 1. Context를 import , ( export let Context1 = createContext(); export키워드 붙여주자)
+import {Context1} from "./../App.js" 9. state사용은 2. useContext(Context) ( 보관함을 해체해주는 함수임 react임포트 걸어야함 )
+(콘솔에 출력해보면 자료들이 나열되어 있음 ) 10. 디스트럭쳐링문법으로 let {storage, shoes} = useContext(Context1); 이렇게 쓰면 html아무데나 state가 잘나옴 11. 이제 props없이 state사용이 가능해짐 + Detail 뿐만 아니라 그 자식들도 props없이 사용이 가능해진다.
+
 function TabContent({tab, shoes}) {
 
-   let [storage] = useContext(Context1); // 추가된 코드
-    return <div>{shoes[tab].title}</div>;
+let [storage] = useContext(Context1); // 추가된 코드
+return <div>{shoes[tab].title}</div>;
 }
 이런식으로 사용하면 됨 ( 자손 컴포넌트도 state를 편리하게 이용함 )
-[참고] 편한지 모르겠다면 쓰지마셈 
+[참고] 편한지 모르겠다면 쓰지마셈
 [단점] 1. state변경시 쓸데없는 것까지 재랜더링 {storage}안쓰는 놈들도 무조건 재랜더링이 됨 + 자식컴포넌트까지 비효율적으로 재랜더링됨
 [단점] 2. 나중에 컴포넌트 재사용이 어려움 Context1이 없다고 하고 막... 그렇게 될 수 있음
-[요약] 간단한 프로젝트에는 사용하기 편하긴 하겠으나 , 보통은 Redux같은 외부라이브러리를 사용한다고 함. 
+[요약] 간단한 프로젝트에는 사용하기 편하긴 하겠으나 , 보통은 Redux같은 외부라이브러리를 사용한다고 함.
 
 14강
 장바구니페이지만들기 & Redux 1: Redux Tookit설치
 장바구니페이지: 표 레이아웃으로 만들것임 ( routes/Cart.js만들어서 Routes element에 붙일 것임)
-리액트 부트스트랩에서 복붙할 것임-  <Table>태그 활용 import / export설정해주면 됨
-Table태그 
-   1. tr 넣으면 가로줄 생김 
-      1-1. th, td 넣으면 열 하나가 생김 4개쓰면 4열이만들어짐
-   2. td 넣으면 세로줄이 생김
-      2-1 td 로 줄이 생김 
-   3. thead는 맨 윗줄
-   4. tbody는 몸통부분 ( 액셀 표 부분 생각 )
+리액트 부트스트랩에서 복붙할 것임- <Table>태그 활용 import / export설정해주면 됨
+Table태그
 
-        <div>
-            <Table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>상품명</th>
-                    <th>수량</th>
-                    <th>변경하기</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>안녕</td>
-                    <td>안녕</td>
-                    <td>안녕</td>
-                </tr>
-            </tbody>
-            </Table>
-        </div>
+1.  tr 넣으면 가로줄 생김
+    1-1. th, td 넣으면 열 하나가 생김 4개쓰면 4열이만들어짐
+2.  td 넣으면 세로줄이 생김
+    2-1 td 로 줄이 생김
+3.  thead는 맨 윗줄
+4.  tbody는 몸통부분 ( 액셀 표 부분 생각 )
+
+      <div>
+          <Table>
+          <thead>
+              <tr>
+                  <th>#</th>
+                  <th>상품명</th>
+                  <th>수량</th>
+                  <th>변경하기</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>1</td>
+                  <td>안녕</td>
+                  <td>안녕</td>
+                  <td>안녕</td>
+              </tr>
+          </tbody>
+          </Table>
+      </div>
 
 장바구니데이터를 state에 보관해두고 데이터바인딩해봅시다. ( 맨날맨날변동 될테니 )
 [문제] Q장바구니 state가 App, Detail, Cart에 필요하면 state를 어디 만들어야하나요? - props전송이 귀찮아짐
@@ -660,17 +656,14 @@ Table태그
 Redux : 컴포넌트들이 props없이 state공유가능
 [특징] redux store.js파일을 만들고 거기에 state를 모두 저장시킴 이걸 모든컴포넌트들이 직접 가져서 쓸 수 있게 됨
 [특징] 대규모 프로젝트에 적합해서 리액트 구인시 대부분 Redux 요구
-[설치] 1. Redux 라이브러리 설치 (react, reactdom 18.1버전이상)
-      2. npm install @reduxjs/toolkit react-redux 터미널에 입력
-      3. 셋팅1. store.js파일생성
-      4. 셋팅2. 코드 복붙
-      import { configureStore } from "@reduxjs/toolkit";
+[설치] 1. Redux 라이브러리 설치 (react, reactdom 18.1버전이상) 2. npm install @reduxjs/toolkit react-redux 터미널에 입력 3. 셋팅1. store.js파일생성 4. 셋팅2. 코드 복붙
+import { configureStore } from "@reduxjs/toolkit";
 
       export default configureStore ({
-         reducer: {  
+         reducer: {
          }
       })
-      5. 셋팅3. index.js가서 <Provider store={store}>쓰기 
+      5. 셋팅3. index.js가서 <Provider store={store}>쓰기
       root.render(
          <React.StrictMode>
            <Provider store={store}>
@@ -681,38 +674,38 @@ Redux : 컴포넌트들이 props없이 state공유가능
          </React.StrictMode>
       );
       6. 셋팅4. import {store} from "./store.js" 쓰기
-      7. 이후 모든 자식들은 store에 있던 state전부 사용가능해짐 
+      7. 이후 모든 자식들은 store에 있던 state전부 사용가능해짐
 
 [문제]Q. 기본 내보내기 / 명명된 내보내기
-1. 기본 내보내기 (Default Export)
-파일당 하나의 값만 기본으로 내보낼 수 있습니다.
-주로 모듈에서 가장 중요한 함수, 클래스, 객체 등을 내보낼 때 사용됩니다.
-기본 내보내기를 가져올 때는 임의의 이름으로 불러올 수 있습니다.
-ex)store.js]// store를 기본 내보내기로 설정
-const store = configureStore({
-    reducer: {
-        // 여기에 리듀서 추가
-    }
-});
-export default store;
-index.js] // 기본 내보내기 가져오기: 원하는 이름으로 가져올 수 있음
-import store from "./store.js";
-기본 내보내기는 항상 import [이름] from "파일경로"의 형태로 가져오며, store라는 이름은 파일 내에서 정한 것이 아니므로 다른 이름으로도 가져올 수 있습니다.
 
-2. 명명된 내보내기 (Named Export)
-파일 내에서 여러 개의 값을 명명된 내보내기로 내보낼 수 있습니다.
-export const 또는 export function과 같은 방식으로 내보내기를 지정합니다.
-가져올 때 반드시 내보낸 이름 그대로 가져와야 합니다.
-ex) store.js]
-// store를 명명된 내보내기로 설정
-export const store = configureStore({ 
+1.  기본 내보내기 (Default Export)
+    파일당 하나의 값만 기본으로 내보낼 수 있습니다.
+    주로 모듈에서 가장 중요한 함수, 클래스, 객체 등을 내보낼 때 사용됩니다.
+    기본 내보내기를 가져올 때는 임의의 이름으로 불러올 수 있습니다.
+    ex)store.js]// store를 기본 내보내기로 설정
+    const store = configureStore({
     reducer: {
-        
+    // 여기에 리듀서 추가
     }
-});
-index.js] // 명명된 내보내기 가져오기: 반드시 내보낸 이름 그대로 가져와야 함
-import { store } from "./store.js";
-명명된 내보내기는 import { [이름] } from "파일경로"의 형태로 가져오며, 대괄호 {}를 사용해야 합니다. 이름을 다르게 가져올 수 없고, 정확하게 store로 가져와야 합니다.
+    });
+    export default store;
+    index.js] // 기본 내보내기 가져오기: 원하는 이름으로 가져올 수 있음
+    import store from "./store.js";
+    기본 내보내기는 항상 import [이름] from "파일경로"의 형태로 가져오며, store라는 이름은 파일 내에서 정한 것이 아니므로 다른 이름으로도 가져올 수 있습니다.
+
+2.  명명된 내보내기 (Named Export)
+    파일 내에서 여러 개의 값을 명명된 내보내기로 내보낼 수 있습니다.
+    export const 또는 export function과 같은 방식으로 내보내기를 지정합니다.
+    가져올 때 반드시 내보낸 이름 그대로 가져와야 합니다.
+    ex) store.js]
+    // store를 명명된 내보내기로 설정
+    export const store = configureStore({
+    reducer: {
+    }
+    });
+    index.js] // 명명된 내보내기 가져오기: 반드시 내보낸 이름 그대로 가져와야 함
+    import { store } from "./store.js";
+    명명된 내보내기는 import { [이름] } from "파일경로"의 형태로 가져오며, 대괄호 {}를 사용해야 합니다. 이름을 다르게 가져올 수 없고, 정확하게 store로 가져와야 합니다.
 
 15강. Redux 2 : store에 state보관하고 쓰는 법
 Redux왜씀? : 컴포넌트간 state공유가 편해짐 (직접통신해서 고류함 - props전송이 필요없음)
@@ -721,15 +714,15 @@ import { configureStore, createSlice } from "@reduxjs/toolkit";
 
 // useState같은걸 store밖에 만듬
 let user = createSlice({
-   name : 'state이름',
-   initialState : 'kim"
+name : 'state이름',
+initialState : 'kim"
 })
 
 export default configureStore ({
-    reducer: {
-        // 여기에 리듀서 추가 (등록해야 사용가능함 createSlice가 다가 아님)
-        작명 : user.reducer   // user : user.reducer이렇게 해도 됨 
-    }
+reducer: {
+// 여기에 리듀서 추가 (등록해야 사용가능함 createSlice가 다가 아님)
+작명 : user.reducer // user : user.reducer이렇게 해도 됨
+}
 })
 이렇게 사용하면 됨 갖다 써볼 것임 = useSelector()훅을 씀 )( Redux store 가져와줌 )
 ex) Cart.js]
@@ -738,52 +731,108 @@ function Cart() {
 
     let a = useSelector((state) => {return state})
     ..}
-이런식으로 변수에 설정해놓으면 ( 화살표함수 형식은 문법임 + 변수에 저장해놓기 ) 
-콘솔창에 해보면 유저가 잘 출력되는 것을 확인할 수 있음 
-console.log(a)       // {user: 'kim'}
-console.log(a.user)  // kim부분만 출력됨 ( object데이터이므로 이런식으로 접근도 가능 )
 
-즉 컴포넌트가 많아지면 리덕스로 props전송이 편해질 수 있음 
+이런식으로 변수에 설정해놓으면 ( 화살표함수 형식은 문법임 + 변수에 저장해놓기 )
+콘솔창에 해보면 유저가 잘 출력되는 것을 확인할 수 있음
+console.log(a) // {user: 'kim'}
+console.log(a.user) // kim부분만 출력됨 ( object데이터이므로 이런식으로 접근도 가능 )
+
+즉 컴포넌트가 많아지면 리덕스로 props전송이 편해질 수 있음
 
 // useState역할
 let user = createSlice({
-    name : 'user',
-    initialState : "kim"
+name : 'user',
+initialState : "kim"
 })
 
 let stock = createSlice({
-    name : 'stock',
-    initialState: [10, 11, 12]
+name : 'stock',
+initialState: [10, 11, 12]
 })
 
 export default configureStore ({
-    reducer: {
-        user : user.reducer,
-        stock : stock.reducer
-    }
+reducer: {
+user : user.reducer,
+stock : stock.reducer
+}
 })
-이렇게 저장도 가능 
+이렇게 저장도 가능
 
 [참고]
 let a = useSelector((state) => {return state})
-여기서 state부분은 store안에 있던 모든 state가 됨 - 즉 어떤 state , 원하는 부분만 나올 수 있도록 할 수 있음 
+여기서 state부분은 store안에 있던 모든 state가 됨 - 즉 어떤 state , 원하는 부분만 나올 수 있도록 할 수 있음
 let a = useSelector((state) => {return state.user})
-console.log(a) // kim만 남음 
+console.log(a) // kim만 남음
 let a = useSelector((state) => {return state.stock})
-console.log(a) // [10, 11, 12]만 나옴 
-[참고] useSelecto편하게 쓰려면 return이 생략할 수 있다 
-let a = useSelector((state) => {return state.stock}) 
+console.log(a) // [10, 11, 12]만 나옴
+[참고] useSelecto편하게 쓰려면 return이 생략할 수 있다
+let a = useSelector((state) => {return state.stock})
 let a = useSelector((state) => state)
 
 [문제]
-Redu쓰면 편한데 Props왜 씀? - 코드가 더 길어버려짐 
-간단한 프로젝트는 그냥 props가 좋음 
-하지만 10개 20개 넘거자면 Redux가 나을듯 
+Redu쓰면 편한데 Props왜 씀? - 코드가 더 길어버려짐
+간단한 프로젝트는 그냥 props가 좋음
+하지만 10개 20개 넘거자면 Redux가 나을듯
 
 [참고]
 Redux쓴다고해서 모든 state를 store에 넣지맙시다
 즉 컴포넌트간 공유가 필요 없다면  
-안에서만 사용 하면 그냥 useState()써도 됨 
+안에서만 사용 하면 그냥 useState()써도 됨
 
 [다음강의예고]
-강의 하단 데이터를 store에 보관하고 장바구니 페이지에서 데이터 바인딩하기 
+강의 하단 데이터를 store에 보관하고 장바구니 페이지에서 데이터 바인딩하기
+
+16강
+[저번시간]state만들고 <Cart>에 보여주기
+[문제] state에 저장된 상품이 100면? - 상품 갯수에 맞게 <tr>만들어 주세요
+[해결] map 함수를 활용해주면 됨.
+{state.prchs.map((a, i) => (
+
+<tr>
+<td>{prchs[i].id + 1}</td>
+<td>{prchs[i].name}</td>
+<td>{prchs[i].count}</td>
+<td>no</td>
+</tr>
+))}
+이런식으로 변경
+[주의]반복문을 쓰면 tr에 key={i}속성 추가해주는게 좋음
+
+Redux의 state변경하는 법 :
+kim 을 John Kim으로 변경하고싶다면?
+// useState역할
+let user = createSlice({
+name : 'user',
+initialState : "kim"
+
+// state수정해주는 함수 만들고
+
+})
+// 원할 때 그 컴포넌트에서 그 함수 실행해달라고 store.js에 요청해주는 방식임
+[why?]
+
+[수정하는방법] 3~4step
+
+1. state수정해주는 함수 만들기
+   reducers : { changeName(state) { return 'john' + state}, ssdsq() {}, .. } // state를 john kim으로 만드는 changeName을 추가할 수 있음
+2. 만든 함수를 export 해야함 (reducers안에서는 export 삽입이 안됨
+   user.actions // state보관함명.actions = state변경함수들이 남음
+   export let { export하고싶은 함수명들삽입 } = user.actions // 관습적인 코드과정임
+   // 디스트럭쳐링문법임 오른쪽 자료를 변수로 쉽게 빼기 위한 문법이며 이를 쉽게 export하기위한과정임
+3. 만든 함수 import해서 사용
+4. 그냥 쓰기전에 한가지 작업이 필요함 ( dispatch안에 한번 감싸서 state변경함수를 넣어야함 )
+   Cart.js] let dispatch = useDispatch() // store.js로 요청을 보내주는 함수임
+   {state.prchs.map((a, i) => (
+   <tr key={i}>
+   <td>{prchs[i].id + 1}</td>
+   <td>{prchs[i].name}</td>
+   <td>{prchs[i].count}</td>
+   <td>
+   <button onClick={() => dispatch(changeName())}>+</button>
+   </td>
+   </tr>
+
+[이유] Redux만든사람이 이렇게 쓰세요
+[이유] 실은 좋은 방식입니다( 버그 방지에 유리)
+[과정] 수정함수를 store에 미리 만들어놓고 컴포넌트에서 실행하도록 해주는 것임 dispatch(changeName) 은 수정함수를 실행해달라고 메세지만 store에게 부탁함
+[why?] store.js 수정함수를 미리 따로 만들어놓고 컴포넌트는 이 것을 부탁하는 식으로 코드를 짜면 훨씬 코드추적이 쉬워짐 (즉 범인찾을 때 store.js만 뒤지면 됨)
