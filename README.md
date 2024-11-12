@@ -937,3 +937,183 @@ Redux Toolkit임 이제까지 배운건 - 이게 더 개선된 것임
 [응용1]상품마다 각각다른 현제페이지에 있는 상품제목, 아이디, 등을 넣어주도록 코드를 짜보는 것
 [응용2]삭제기능 // findIndex함수 활용
 [응용3]중복상품은 추가x(상품이 있다면 카운트만 1증가시키도록 코드를 짜보자 ) // addCartList에 수정 (같은 id 유무로 해결)
+
+19강 리액트에서 자주쓰는 if문 작성패턴 5개
+지금까지는 JSX를 이용해서 html작성하고 있음
+if문을 써서 조건부로 html을 보여주고 싶을 때가 있음
+지금까지는 삼항연산자만 주구장창 사용했는데, 또 어떤 if문들을 쓸 수 있는지 맛만 보자. (이런게 있다고 체크만 ㄱㄱ)
+
+1. 컴포넌트 안에서 쓰는 if/else
+   function Component() {
+   if (true) {
+   return <p>참이면 보여줄 html</p>
+   } else { // [참고]여기서의 else는 생략이 가능 [참고] if - else if - else 이것도 if두개로 축약이 가능함
+   return null;
+   }
+   }
+
+   > > 컴포넌트에서 JSX를 조건부로 보여주고 싶으면 그냥 이렇게 씁니다.
+   > > 우리가 자주 쓰던 자바스크립트 if문은 return() 안의 JSX 내에서는 사용불가입니다
+
+   <div>if(){}</div>이게 안된다는 소리..
+   그래서 보통 return + JSX 전체를 보여주는 if문을 작성해서 사용합니다.
+
+2. JSX안에서 쓰는 삼항연산자
+   영어로 간지나게 ternary operator 라고 합니다.
+   조건문 ? 조건문 참일때 실행할 코드 : 거짓일 때 실행할 코드
+   function Component() {
+   return (
+   <div>
+   {
+   1 === 1
+   ? <p>참이면 보여줄 html</p>
+   : null
+   }
+   </div>
+   )
+   }
+   > > 삼항연산자는 그냥 if와는 다르게 JSX안에서도 실행가능하며 조건을 간단히 주고 싶을 때 사용함
+
+- 삼항연산자는 중첩 사용도 가능하다
+  function Component() {
+  return (
+  <div>
+  {
+  1 === 1
+  ? <p>참이면 보여줄 html</p>
+  : ( 2 === 2
+  ?<p>안녕</p>
+  :<p>반갑</p>
+  )
+  }
+  </div>
+  )
+  }
+  > > 하지만 코드 해석이 어려움 그냥 return 바깥에서 if else 쓴다음 결과를 변수로 저장, 그 변수를 집어넣든 하자
+
+3. &&연산자로 if역할 대신하기
+   [참고]-문법 자바스크립트에선 &&연산자라는게 있다.
+   "그냥 왼쪽 오른쪽 둘다 true면 전체를 true로 바꿔주세요~"
+   true && false; true&&true; 왼쪽의 코드는 false , 오른쪽은 true로 남는다.
+   근데 JS는 &&기호로 비교할 때 true와 false를 넣는게 아니라 자료형을 넣으면
+   true && '안녕'; // '안녕'
+   false && '안녕'; // false
+   ture && false && '안녕'; // false
+   즉 자바스크립트는 그냥 &&로 연결된 값들 중에 처음 등장하는 falsy 값을 찾아주고 그게 아니면 마지막값을 남겨준다 이렇게 이해하면 됨
+
+html 조건부로 보여줄때 이걸 활용하는 경우가 많음
+"만약에 이 변수가 참이면 <p></p>를 이자리에 뱉고 참이 아니면 null뱉고" = UI만들때 이런거 매우 자주 씀- &&연산자로 쓰면 됨
+function Component() {
+return (
+
+<div>
+{
+1 === 1
+? <p>참이면 보여줄 html</p>
+: null
+}
+</div>
+)
+}
+
+function Component() {
+return (
+
+<div>
+{ 1 === 1 && <p>참이면 보여줄 html</p>}
+</div>
+)
+}
+
+> > 즉 위의 두 예제는 동일한 결과를 보여줌
+
+4. switch / case 조건문
+   if문이 중첩해서 여러개 달려있는 경우에 가끔 사용함
+   function Component2() {
+   var user = 'seller';
+   if (user === 'seller') {
+   return <h4>판매자 로그인</h4>
+   } else if ( user === 'customer') {
+   return <h4>구매자 로그인</h4>
+   } else {
+   return <h4>그냥 로그인</h4>
+   }
+   }
+   이렇게 연달아 if문을 사용하는 경우
+   function Component2() {
+   var user = 'seller';
+   switch(user) {
+   case 'seller' :
+   return <h4>판매자 로그인</h4>
+   case 'customer' :
+   return <h4>구매자 로그인</h4>
+   default :
+   return <h4>그냥 로그인</h4>
+   }
+   }
+   > > switch문법 쓰는 방법:
+
+1)  switch(검사할변수) {} 작성
+2)  그 안에 case 검사할 변수가 이거랑 일치하냐 :
+3)  그래서 이게 일치하면 case : 밑의 코드를 실행
+4)  default: 는 그냥 맨 마지막에 쓰는 else와 동일
+
+장점: if문 연달아쓸 코드가 약간 줄어들 수 있음
+단점: 조건식란에 변수하나만 검사할 수 있다는 것
+
+5. object/array 자료형 응용
+   "경우에 따라서 다른 html 태그등을 보여주고 싶은 경우"
+   if문 여러개 혹은 삼항 연산자 여러개를 작성해야할텐데..
+   예를 들면 쇼핑몰에서 상품설명부분을 탭으로 만든다고 가정)
+   탭은 그냥 경우에 따라서 상품정보/ 배송정보/ 환불약관 내용을 보여주고싶은 것
+   현재 state가 info면 <p>상품정보</p>
+   현재 state가 shipping이면 <p>배송정보</p>
+   현재 state가 refund면 <p>환불약관</p>
+   이런것들..
+
+일단 state만들어놓고 if문으로 state를 검사하는 문법을 써야할 거 같지만,
+이번엔 if문이 아니라 자바크립트 object자료형에 내가 보여주고 싶은 HTML을 다씀
+function Component() {
+var currentState = 'info';
+return (
+
+<div>
+{
+{
+info : <p>상품정보</p>,
+shipping : <p>배송관련</p>,
+refund : <p>환불약관</p>
+}
+}
+</div>
+)
+}
+>>원래 JSX상에서 html태그들은 저렇게 object에 담든, array에 담든 아무 상관없습니다.
+암튼 이렇게 object 자료형으로 HTML을 다 정리해서 담은 다음 ( { 키 : 값 }형태 )
+마지막에 object{}뒤에 []대괄호를 붙여서 "key값이 현재상태인 자료를 뽑겠습니다"라고 써놓는 겁니다.
+
+그럼 이제 현재상태라는 변수의 값에 따라서 원하는 HTML을 보여줄 수 있습니다.
+만약에 var 현재상태가 info면 info항목에 저장된 태그가 보여질 것이고,
+다른 상태라면 그 항목에 저장된 것들이 보여질 것입니다.
+
+혹은 변수에 저장해서 써도 깔끔해질 것 같긴 합니다
+
+var TabUI = {
+info : <p>상품정보</p>,
+shipping : <p>배송관련</p>,
+refund : <p>환불약관</p>
+}
+
+function Component() {
+var CurrentState = 'info';
+return (
+
+<div>
+{
+TabUI[CurrentState]
+}
+</div>
+)
+}
+
+사실 리액트처럼 html css js를 한 곳에 비비면 어떻게 해도 코드가 어려워질 수 밖에 없긴합니다.
