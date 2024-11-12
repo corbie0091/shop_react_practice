@@ -3,6 +3,7 @@ import { Nav } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { Context1 } from "../App.js";
 import { addCartList } from "../store.js";
+import { useDispatch } from "react-redux";
 
 function Detail(props) {
   useContext(Context1);
@@ -17,6 +18,7 @@ function Detail(props) {
   let { id } = useParams();
   let [showAlert, setShowAlert] = useState(true);
   let [tab, setTab] = useState(0);
+  let dispatch = useDispatch();
   return (
     <div className="container">
       {showAlert && (
@@ -33,7 +35,13 @@ function Detail(props) {
           <button
             className="btn btn-danger"
             onClick={() => {
-              addCartList();
+              dispatch(
+                addCartList({
+                  id: props.shoes[id].id,
+                  name: props.shoes[id].title,
+                  count: 1,
+                })
+              );
             }}
           >
             주문하기

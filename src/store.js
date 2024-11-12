@@ -10,7 +10,7 @@ let prchs = createSlice({
   name: "prchs",
   initialState: [
     { id: 0, name: "White and Black", count: 2 },
-    { id: 1, name: "Grey Yordan", count: 1 },
+    { id: 2, name: "Grey Yordan", count: 1 },
   ],
   reducers: {
     addCount(state, action) {
@@ -20,17 +20,25 @@ let prchs = createSlice({
       }
     },
 
-    addCartList(array, action) {
-      return [
-        ...array.slice(0, action.index),
-        action.item,
-        ...array.slice(action.index),
-      ];
+    addCartList(state, action) {
+      let index = state.findIndex((item) => item.id === action.payload.id);
+      if (index === -1) {
+        state.push(action.payload);
+      } else {
+        state[index].count++;
+      }
+    },
+
+    removeItem(state, action) {
+      const index = state.findIndex((item) => item.id === action.payload);
+      if (index !== -1) {
+        state.splice(index, 1);
+      }
     },
   },
 });
 
-export let { addCount, addCartList } = prchs.actions;
+export let { addCount, addCartList, removeItem } = prchs.actions;
 
 export default configureStore({
   reducer: {

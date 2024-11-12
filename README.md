@@ -886,3 +886,54 @@ store폴더 > userSlice.js 만들어서 거기에 user변수를 넣으면 됨 > 
 
 [Q] Detail페이지 에서 주문하기 버튼을 누르면 장바구니 state에 항목을 하나 추가해주는 방식
 즉 주문하기 버튼을 누르면 밀어넣게 진행
+
+18강 Redux 5 : 장바구니 기능 만들기 숙제 & 응용문제
+[Q] 수량+기능 만들기
+state수정은 1수량함수만들고 2export만들고 3.import해서 사용
+reducers : {
+addCount(state) {
+state[0].count++
+}
+}
+
+여기서 파라미터를 추가해서 함수를 재활용가능하도록 진행
+
+addCount(state, action) {
+state[action.payload].count++
+}
+이런식으로 진행
+
+export let { addCount } = cart.action;
+
+이후 Cart.js에서 import 해와서 dispatch(() =>addCount(i)) ( map함수안이라서 0번째 1번째 정해짐)
+정렬버튼을 누르면 가나다로 순서가 변경될 시에 오류가 생길 수 있음
+0번째 버튼을 누르면 옆에 있는 id를 가져오고 이와 똑같은 id를 가진 상품을 + 시켜줌 이런식으로 코딩 ㄱ
+
+dispatch(() =>addCount(state[i].id)) 이런식으로 가져오고
+
+reducers : {
+addCount(state) {
+state.findindex((a)=>{ return 조건식}) // a는 하나하나의 데이터 findindex는 배열에서만 가능
+
+let score = state.findindex((a)=>{ return a.id == action.payload}) // 비교를 해서 같은게 나왔다면 몇번째에 있는지 남겨줌
+if (score) {
+score.count++
+}
+}
+
+-> 자바스크립트 기초실력문제가 됨
+
+[Q2] 버튼누르면 state에 상품추가
+함수 추가 addItem (state, action) {
+state.push(action.payload)
+}
+
+주문하기 버튼에서 onClick={()=> {dispatch(addItem({id: 1, name: 'Red Knit', count:1}))}}
+
+[마무리_정리]Redux를쓰면 state가 편하게 공유 가능
+수정을 하고싶으면 수정함수만들고 export import 해서 dispatch안에 사용하면됨
+Redux Toolkit임 이제까지 배운건 - 이게 더 개선된 것임
+
+[응용1]상품마다 각각다른 현제페이지에 있는 상품제목, 아이디, 등을 넣어주도록 코드를 짜보는 것
+[응용2]삭제기능 // findIndex함수 활용
+[응용3]중복상품은 추가x(상품이 있다면 카운트만 1증가시키도록 코드를 짜보자 ) // addCartList에 수정 (같은 id 유무로 해결)
