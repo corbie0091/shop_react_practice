@@ -782,7 +782,7 @@ Redux쓴다고해서 모든 state를 store에 넣지맙시다
 [다음강의예고]
 강의 하단 데이터를 store에 보관하고 장바구니 페이지에서 데이터 바인딩하기
 
-16강
+16강 store의 state 변경하는 법: dispatch요청
 [저번시간]state만들고 <Cart>에 보여주기
 [문제] state에 저장된 상품이 100면? - 상품 갯수에 맞게 <tr>만들어 주세요
 [해결] map 함수를 활용해주면 됨.
@@ -809,7 +809,7 @@ initialState : "kim"
 
 })
 // 원할 때 그 컴포넌트에서 그 함수 실행해달라고 store.js에 요청해주는 방식임
-[why?]
+[why?] store.js 수정함수를 미리 따로 만들어놓고 컴포넌트는 이 것을 부탁하는 식으로 코드를 짜면 훨씬 코드추적이 쉬워짐 (즉 범인찾을 때 store.js만 뒤지면 됨)
 
 [수정하는방법] 3~4step
 
@@ -836,3 +836,53 @@ initialState : "kim"
 [이유] 실은 좋은 방식입니다( 버그 방지에 유리)
 [과정] 수정함수를 store에 미리 만들어놓고 컴포넌트에서 실행하도록 해주는 것임 dispatch(changeName) 은 수정함수를 실행해달라고 메세지만 store에게 부탁함
 [why?] store.js 수정함수를 미리 따로 만들어놓고 컴포넌트는 이 것을 부탁하는 식으로 코드를 짜면 훨씬 코드추적이 쉬워짐 (즉 범인찾을 때 store.js만 뒤지면 됨)
+
+17강 state가 object나 array인 자료인 경우에 state변경하는 법
+ㄴ 조금 특이함
+ex) store.js]
+// useState역할
+let user = createSlice({
+name: "user",
+initialState: { name : 'kim', age : 20 }, // object로 변경
+reducers: {
+changeName() {
+return "johnkim";
+},
+},
+});
+[Q] {name: 'kim'}을 {name: 'park'}으로 바꾸려면?
+reducers: { changeName(state) { return { name : 'kim', age : 20 }}}
+reducers: { changeName(state) { state.name = 'park' } } 이렇게 해도 됨 (immer 도움)
+ㄴ 그래서 문자하나만 필요해도 일부러 오브젝트자료형{}안에 담기도 함 ( 리턴문없이 수정이 편하니까 )
+
+[결론]array/object의 경우 리턴문을 안쓰고 직접 수정해도 state가 변경됩니다.
+changeName(state) { state.name = "park"; }, immer.js가 자동으로 설치되어 있어서 가능
+[주의] export해주는거 무조건 해줘야함 + 물론 import도 + dispatch안에 설정해야하는 것도
+export let { changeName, increase } = user.actions;
+
+함수의 파라미터 문법: increase(state, a) .. dispatch( increase(10)) , dispatch(increase(100))
+
+같은 함수로 다른 기능을 가진 매서드 사용 가능
+[Q]가끔 +1 말고 +10도 해주고싶은데요 = state변경함수에 파라미터 뚫는 법
+increase2(state){ state.age += 1}
+increase2(state, a ){ state.age += a} // increase(100)
+increase2(state, a ){ state.age += a.payload} // increase(100)
+[참고] payload를 꼭 해줘야함 - 파라미터자리에 입력했던 숫자가 이곳에 들어온다는 뜻임
+
+[참고] payload를 적는 이유 ? 메세지에 화물을 실어보낸다는 개념임
+[참고] 파라미터는 보통 a 가 아닌 action으로 작명해서 코드함 - 이 안에 택배, 화물뿐 아니라 action에 대한 정보들도 들어 있어서 그럼
+[참고] state변경함수를 action이라고 작명하면 됨
+
+코드 분할
+코드 길면 알아서 import export쓰면 되는 것
+user라는 변수가 너무 길면 다른 파일을 만들어서 거기에 넣음
+store폴더 > userSlice.js 만들어서 거기에 user변수를 넣으면 됨 > 이후 export import설정 > store.js에 import해서 정리 >
+
+> 함수의 export부분도 userSlice에 옮김 > 함수부분을 사용하는 Cart부분의 import 주소도 정리
+
+[Q] +버튼 누르면 수량이 +1 되는 기능 ( n번째 버튼누르면 n번째 상품 +1)
+= 하지만 state순서는 그대로인데 표 순서만 바뀌면 어떻게 할 것임? -> 0번째 상품과 실제 버튼 누르는 것이 달라질 수 있음
+[hint]장바구나 상품에 있는 id부분을 활용해주면 될듯 - 이버튼을 누르면 옆에 있는 id를 가져오고 - id와 똑같은 id를 가진 상품의 수량을 올릴 수 있도록 진행
+
+[Q] Detail페이지 에서 주문하기 버튼을 누르면 장바구니 state에 항목을 하나 추가해주는 방식
+즉 주문하기 버튼을 누르면 밀어넣게 진행

@@ -1,17 +1,5 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
-
-// useState역할
-let user = createSlice({
-  name: "user",
-  initialState: "kim",
-  reducers: {
-    changeName() {
-      return "johnkim";
-    },
-  },
-});
-
-export let { changeName } = user.actions;
+import user from "./store/userSlice";
 
 let stock = createSlice({
   name: "stock",
@@ -24,8 +12,25 @@ let prchs = createSlice({
     { id: 0, name: "White and Black", count: 2 },
     { id: 1, name: "Grey Yordan", count: 1 },
   ],
-  reducers: {}, // 필요에 따라 reducer를 추가하거나 빈 객체를 넣어야 한다.
+  reducers: {
+    addCount(state, action) {
+      let item = state.find((item) => item.id === action.payload);
+      if (item) {
+        item.count += 1;
+      }
+    },
+
+    addCartList(array, action) {
+      return [
+        ...array.slice(0, action.index),
+        action.item,
+        ...array.slice(action.index),
+      ];
+    },
+  },
 });
+
+export let { addCount, addCartList } = prchs.actions;
 
 export default configureStore({
   reducer: {
