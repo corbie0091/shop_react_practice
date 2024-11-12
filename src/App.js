@@ -1,7 +1,7 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import "./App.css";
 import bg from "./img/bg.png";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import data from "./data/data.js";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Detail from "./routes/Detail.js";
@@ -14,7 +14,14 @@ export let Context1 = createContext();
 function App() {
   let [shoes, setShoes] = useState(data); // data.js파일에서 import
   let [storage] = useState([10, 11, 12]);
+  let [watched, setWatched] = useState([]);
   let navigate = useNavigate();
+
+  useEffect(() => {
+    let savedWatched = JSON.parse(localStorage.getItem("watched")) || [];
+    setWatched(savedWatched);
+  }, []);
+
   return (
     <div className="App">
       <Navbar bg="dark" data-bs-theme="dark">
@@ -113,11 +120,21 @@ function MainPage({ shoes, setShoes }) {
 
 function Card({ shoe }) {
   let navigate = useNavigate();
+  const recordId = () => {
+    let watched = JSON.parse(localStorage.getItem("watched")) || [];
+    if (!watched.includes(shoe.id)) {
+      watched.push(shoe.id);
+      localStorage.setItem("watched", JSON.stringify(watched));
+    }
+  };
   return (
     <div
       key={shoe.id}
       className="col-md-4"
-      onClick={() => navigate(`/detail/${shoe.id}`)}
+      onClick={() => {
+        navigate(`/detail/${shoe.id}`);
+        recordId();
+      }}
     >
       <img src={shoe.img} alt={shoe.img} className="product-img" width="80%" />
       <h4>{shoe.title}</h4>

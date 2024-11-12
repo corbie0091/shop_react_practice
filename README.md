@@ -1117,3 +1117,71 @@ TabUI[CurrentState]
 }
 
 사실 리액트처럼 html css js를 한 곳에 비비면 어떻게 해도 코드가 어려워질 수 밖에 없긴합니다.
+
+20강 localStorage로 만드는 최근 본 상품 기능 1
+브라우저 새로고침하면 state값이 초기값으로 돌아감 -> 처음부터 다시 읽기 떄문 ( 정상임 )
+새로고침해도 영구적으로 저장하려면 서버로 보내서 DB에 저장해놓으면 됨
+아니면 차선책으로 localStorage에 저장하면 반영구적으로 저장가능 - 브라우저 안에 있음
+브라우저) 개발자 도구) applicationTab) Local Storage
+
+1. Key : Value형태로 저장 가능 ( 직접 더블클릭으로 저장 가능 )
+2. 최대 5MB까지 문자형태로만 저장이 가능 ( 사이트마다이고 사실 어마어마한 양임 )
+3. 사이트 재접속해도 남아있음 ( 브라우저 청소하면 삭제됨 )
+   [참고]SessionStorage = 브라우저 끄면 날라감 ( 휘발성있는 데이터는 여기를 사용하면 됨 )
+   콘솔에 저장시키는 방법 있음
+
+1) 데이터 저장:
+   localStorage.setItem('이름','값')
+   > localStorage.setItem('age',20);
+   > 이렇게 하면 실제로 로컬스토리지에 데이터가 저장되는 것을 볼 수 있음
+2) 데이터 출력:
+   localStorage.getItem('이름')
+   > localStorage.getItem('age') // '20' 숫자로 저장했어도 문자로 출력됨
+3) 데이터 삭제:
+   localStorage.removeItem('이름)
+   > localStorage.removeItem('age') // 삭제됨
+   > [Q]데이터 수정은? - 데이터 수정하는 문법은 없음..
+   > 그냥 데이터를 다시 꺼내서 수정하고 다시 집어넣으면 된다.(귀찮음..)
+
+세션스토리지는 전부다 sessionStorage. 으로 바꾸면 됨
+
+[Q]array, object자료형은 어떻게 저장? JSON형태로 바꿔주면 됩니다.
+App.js]
+function App() {
+let obj = {name: 'kim'}
+localStorage.setItem('data', obj)
+}
+
+> > 이런식으로 저장하게 되면 localStorage에서 key는 data , value는 [object, Object]로 보임
+> > [참고] [object Object]는 객체자료형이 깨진 것임
+> > 즉 , 직접 집어넣을 수 없다. = JSON형태로 바꾸면 된다.
+
+let obj = {name: 'kim'}
+JSON.stringfy(obj);
+localStorage.setItem('data', obj)
+
+이런식으로 진행하면 따옴표 쳐진 JSON자료 형태로 잘 저장이 됨.
+축약형) let obj = { name : 'kim'}
+localStorage.setItem('data', JSON.stringfy(obj));
+[단점] JSON으로 저장했으므로 거낼 때도 JSON형태로 나오게 된다. 따옴표가 쳐져있는 모습
+let output = localStorage.getItem('data');
+console.log(output); // {"name":"kim"}
+
+[보완]JSON -> array/object 변환은 JSON.parse()
+console.log(JSON.parse(output)); // object형태로 출력 = {name: 'kim'}
+console.log(JSON.parse(output).name); // 값만 출력 = kim
+
+[Q]최근 본 상품 UI를 만들자 메인페이지에 진열
+상세페이제에서 봤던 상품의 번호들을 localStorage에 저장하기 //
+저장은 그럼 어떤 형식으로? -> 자료의 이름을 watched로 하고 값을 []형태로 저장해놓기
+이후 [0]번 상품을 보면 0을 저장, 1번 상품을 봤다면 1을 또 저장하기 이런식으로 해놓기
+1번상품을 여러면 보면 1을 계속 추가해줄것임? -> 즉 중복번호는 막도록 코딩하자 ( Set자료형쓰면 중복제거 쉬울 수도 )
+
+[]이게 먼저 있어야할듯
+
+App.js] useEffect(()=> {
+localStorage.setItem('watched', JSON.stringfy([]))
+}, [])
+
+이렇게 하면 처음 접속했을때 만들어 줌 -> array자료가 생성 -> 데이터 추가하거나 수정가능해짐 ->
+array자료형 저장하고싶으면 JSON.stringfy 적용해야함
