@@ -16,9 +16,20 @@ function Detail(props) {
     return () => clearTimeout(timer);
   }, []);
   let { id } = useParams();
+  let findGoods = props.shoes.find((x) => x.id === parseInt(id));
   let [showAlert, setShowAlert] = useState(true);
   let [tab, setTab] = useState(0);
   let dispatch = useDispatch();
+
+  useEffect(() => {
+    let viewedGoods = localStorage.getItem("watched"); // 꺼내고
+    viewedGoods = JSON.parse(viewedGoods) || [];
+    if (!viewedGoods.includes(findGoods.id)) {
+      viewedGoods.unshift(findGoods.id);
+    }
+    viewedGoods = [...new Set(viewedGoods)];
+    localStorage.setItem("watched", JSON.stringify(viewedGoods)); // 다시 저장
+  }, [findGoods]);
   return (
     <div className="container">
       {showAlert && (

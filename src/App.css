@@ -1,8 +1,41 @@
 .main-bg {
-  height: 300px;
+  position: relative;
   background-image: url("./img/bg.png");
-  background-color: cover;
-  background-position: center;
+  background-color: #f0f0f0; /* 배경 이미지가 커지면서 여백을 채울 색 */
+  height: 600px;
+  background-size: contain; /* 배경 이미지를 요소 크기에 맞게 조정 (비율 유지) */
+  background-position: center; /* 이미지가 중앙에 위치하도록 */
+  background-repeat: repeat; /* 배경 이미지 반복 방지 */
+}
+
+.recently-viewed {
+  position: absolute;
+  top: 80px; /* 배너 상단에서 조금 아래로 위치 */
+  right: 20px; /* 오른쪽에 배치 */
+  z-index: 10;
+  background-color: white; /* 배경을 흰색으로 설정 */
+  border: 2px solid #ccc; /* 하얀색 테두리 */
+  padding: 20px;
+  display: flex;
+  flex-direction: column; /* 세로로 정렬 */
+  gap: 10px; /* 아이템 간 간격 */
+  max-width: 200px; /* 최대 너비 설정 */
+  border-radius: 10px; /* 테두리 둥글게 */
+}
+
+.recent-item {
+  cursor: pointer;
+  text-align: center;
+}
+
+.recent-item img {
+  width: 80px; /* 이미지 크기 조정 */
+  height: auto;
+}
+
+.recent-item h4 {
+  margin-top: 10px; /* 제목과 이미지 간 간격 */
+  font-size: 14px;
 }
 
 .product-img {

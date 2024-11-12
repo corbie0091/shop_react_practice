@@ -1157,12 +1157,12 @@ localStorage.setItem('data', obj)
 > > 즉 , 직접 집어넣을 수 없다. = JSON형태로 바꾸면 된다.
 
 let obj = {name: 'kim'}
-JSON.stringfy(obj);
+JSON.stringify(obj);
 localStorage.setItem('data', obj)
 
 이런식으로 진행하면 따옴표 쳐진 JSON자료 형태로 잘 저장이 됨.
 축약형) let obj = { name : 'kim'}
-localStorage.setItem('data', JSON.stringfy(obj));
+localStorage.setItem('data', JSON.stringify(obj));
 [단점] JSON으로 저장했으므로 거낼 때도 JSON형태로 나오게 된다. 따옴표가 쳐져있는 모습
 let output = localStorage.getItem('data');
 console.log(output); // {"name":"kim"}
@@ -1180,8 +1180,64 @@ console.log(JSON.parse(output).name); // 값만 출력 = kim
 []이게 먼저 있어야할듯
 
 App.js] useEffect(()=> {
-localStorage.setItem('watched', JSON.stringfy([]))
+localStorage.setItem('watched', JSON.stringify([]))
 }, [])
 
 이렇게 하면 처음 접속했을때 만들어 줌 -> array자료가 생성 -> 데이터 추가하거나 수정가능해짐 ->
-array자료형 저장하고싶으면 JSON.stringfy 적용해야함
+array자료형 저장하고싶으면 JSON.stringify 적용해야함
+
+21강 localStorage로 만드는 최근 본 상품 기능 2
+
+코드한줄도 못적겠다??
+[코딩팁]
+코드 짜는 법을 모른다면? -우리는 컴퓨터한테 명령내리는 것임
+최근 본 상품 기능만들어 > 컴퓨터한테 하나하나 상세히 설명해야 알아들을 것임
+즉, 추상적인 설명이 아니라 Detail페이지에 접속하면 상품번호가져와서 로컬스토리지에 watched항목에 보관해라 이런식으로 해야함
+
+1. 한글먼저 쓰고 코드로 옮기는게 맞음 ( 자바스크립트로 번역하는 것임 )
+2. 아주 상세히 설명할수록 코딩을 잘하는 놈이다.
+3. 고수들 강의? 다들 한글먼저 짭니다 ( 머릿속에서 )
+
+Detail.js]
+useEffect로 진행 로드되었을때 특정 코드를 실행할 수 있으므로 이걸로 진행
+let findGoods = props.shoes.find((x) => x.id == id);
+useEffect(() => {})
+이후 현재페이지의 id값을 가져와야함 -> findGoods.id
+
+수정을 해야하므로 getItem으로 꺼내고 > JSON파일로 바꾸고 > id값을 push > 다시 저장(JSON형식으로)
+useEffect(() => {
+const viewedGoods = localStorage.getItem("watched"); // 꺼내고
+viewedGoods = JSON.parse(viewedGoods);
+viewedGoods.push(findGoods.id);
+localStorage.setItem("watched", JSON.stringify(viewedGoods)); // 다시 저장
+}, []);
+
+[Q]이미 있으면 push()하지마라
+조건문으로 하면 편하긴함 > 편법???
+array에서 중복제거 쉽게하려면 Set자료형써도 됩니다.
+array > set > array
+
+useEffect(() => {
+const viewedGoods = localStorage.getItem("watched"); // 꺼내고
+viewedGoods = JSON.parse(viewedGoods);
+viewedGoods.push(findGoods.id);
+viewedGoods = new Set(viewedGoods); // set자료형으로 변환해서 중복제거
+viewedGoods = Array.from(viewedGoods); // 다시 array자료형으로 변환
+localStorage.setItem("watched", JSON.stringify(viewedGoods)); // JSON형식으로 array자료형을 저장시킴
+}, []);
+
+[Q] 재랜더링시에 초기화되지 않도록 useEffect를 수정?
+App.js]
+useEffect(() => {
+// 로컬 스토리지에 'watched' 키가 없을 때만 초기화
+if (!localStorage.getItem("watched")) {
+localStorage.setItem("watched", JSON.stringify([]));
+}
+}, []); // 빈 의존성 배열로 첫 렌더링 시 한 번만 실행
+
+[결론] 사이트 재접속시에도 데이터 유지되게 만들려면 localStorage잘 활용하길..
+localStorage에 자동 state를 자동저장? -> 외부 라이브러리를 설치해서진행
+ex) 리덕스 쓰는 사람들은 Redux store에 있는 state들을 로컬스토리지에 자동저장시킬 수 있게됨
+ㄴ 외부라이브러리이름: redux-persist
+[기타] Jotai, Zustand 다른 state 관리 라이브러리 도 있음 한곳에 보관하고 수정하고 진행 가능
+ㄴ 이 외부라이브러리에서도 localStorage에서 실시간 state 관리 가능

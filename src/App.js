@@ -18,10 +18,13 @@ function App() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    let savedWatched = JSON.parse(localStorage.getItem("watched")) || [];
+    if (!localStorage.getItem("watched")) {
+      localStorage.setItem("watched", JSON.stringify([]));
+    }
+
+    const savedWatched = JSON.parse(localStorage.getItem("watched")) || [];
     setWatched(savedWatched);
   }, []);
-
   return (
     <div className="App">
       <Navbar bg="dark" data-bs-theme="dark">
@@ -63,7 +66,9 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<MainPage shoes={shoes} setShoes={setShoes} />}
+          element={
+            <MainPage shoes={shoes} watched={watched} setWatched={setWatched} />
+          }
         />
         <Route path="/shop" element={<div>옷페이지임</div>} />
         <Route path="/about" element={<About />}>
@@ -72,6 +77,7 @@ function App() {
         </Route>
         <Route path="/community" element={<div>공지사항페이지임</div>} />
         <Route path="/cart" element={<Cart />} />
+
         <Route
           path="/detail/:id"
           element={
@@ -86,7 +92,19 @@ function App() {
   );
 }
 
-function MainPage({ shoes, setShoes }) {
+function MainPage({ shoes, watched, setWatched, setShoes }) {
+  let navigate = useNavigate();
+
+  const handleClick = (id) => {
+    const updatedWatched = [
+      id,
+      ...watched.filter((watchedId) => watchedId !== id),
+    ];
+    setWatched(updatedWatched);
+    localStorage.setItem("watched", JSON.stringify(updatedWatched));
+    navigate(`/detail/${id}`);
+  };
+
   return (
     <>
       <div className="main-bg" style={{ backgroundImage: `url(${bg})` }}></div>
@@ -94,7 +112,12 @@ function MainPage({ shoes, setShoes }) {
       <div className="container">
         <div className="row">
           {shoes.map((shoe, i) => (
-            <Card shoe={shoe} key={shoe.id}></Card>
+            <Card
+              shoe={shoe}
+              key={shoe.id}
+              watched={watched}
+              setWatched={setWatched}
+            />
           ))}
         </div>
       </div>
@@ -114,18 +137,38 @@ function MainPage({ shoes, setShoes }) {
       >
         버튼
       </button>
+
+      <div className="recently-viewed">
+        <h5>최근 본 상품</h5>
+        {watched.slice(0, 2).map((id) => {
+          const shoe = shoes.find((shoe) => shoe.id === id);
+          return (
+            <div
+              key={shoe.id}
+              className="recent-item"
+              onClick={() => handleClick(shoe.id)}
+            >
+              <img src={shoe.img} alt={shoe.title} />
+              <h4>{shoe.title}</h4>
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }
 
-function Card({ shoe }) {
+function Card({ shoe, watched, setWatched }) {
   let navigate = useNavigate();
-  const recordId = () => {
-    let watched = JSON.parse(localStorage.getItem("watched")) || [];
-    if (!watched.includes(shoe.id)) {
-      watched.push(shoe.id);
-      localStorage.setItem("watched", JSON.stringify(watched));
-    }
+
+  const handleClick = (id) => {
+    const updatedWatched = [
+      id,
+      ...watched.filter((watchedId) => watchedId !== id),
+    ];
+    setWatched(updatedWatched);
+    localStorage.setItem("watched", JSON.stringify(updatedWatched));
+    navigate(`/detail/${id}`);
   };
   return (
     <div
@@ -133,7 +176,7 @@ function Card({ shoe }) {
       className="col-md-4"
       onClick={() => {
         navigate(`/detail/${shoe.id}`);
-        recordId();
+        handleClick(shoe.id);
       }}
     >
       <img src={shoe.img} alt={shoe.img} className="product-img" width="80%" />
