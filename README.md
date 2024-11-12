@@ -1241,3 +1241,89 @@ ex) 리덕스 쓰는 사람들은 Redux store에 있는 state들을 로컬스토
 ㄴ 외부라이브러리이름: redux-persist
 [기타] Jotai, Zustand 다른 state 관리 라이브러리 도 있음 한곳에 보관하고 수정하고 진행 가능
 ㄴ 이 외부라이브러리에서도 localStorage에서 실시간 state 관리 가능
+
+22강 실시간 데이터가 중요하면 react-query
+서버랑 통신하는 기능을 다루다보면 ajax 성공시 / 실패시 html보여주려면? -몇초마다 자동으로 ajax요청?? 실패시 몇초후에 요청재시도? / 다음페이지를 미리 가져오는방법??
+
+근데 이런 것들이 귀찮으면 react-query를 사용하면 적은 코드로 기능개발이 가능해짐
+[사용]실시간sns만들때, 코인거래소 등 실시간 데이터를 몇초마다 보여줄때 유용
+[설치1]npm install react-query
+[설치2]index.js셋팅] const queryClient = new QueryClient() 코드 추가
+[설치3]<QueryClientProvider client={queryClient}></QueryClientProvider> 로 감싸주자
+[설치4]import는 필수 = 설치완료
+
+1. 서버에서 유저이름 가져와 보여주기
+   [예시_코드] https://codingapple1.github.io/userdata/.json
+   (여기에 로그인된 유저정보가 있을 것임)
+2. ajax요청
+   axios.get("https://codingapple1.github.io/userdata.json").then((a) => {
+   const data = a.data;
+   console.log(data);
+   });
+
+이렇게도 가능하지만 리액트쿼리로 진행
+
+1. useQuery('작명', () => { return axios.get("https://codingapple1.github.io/userdata.json").then((a) => {
+   return a.data;
+   });})
+   를 이용해서 ajax요청
+
+이렇게 진행 -> return을 꼭 써야함
+
+2.  변수에 저장
+    let result = useQuery('작명', () => { return axios.get("https://codingapple1.github.io/userdata.json").then((a) => {
+    return a.data;
+    });})
+    이렇게 하면 손쉽게 판단이 가능
+    [장점1] 성공/실패/로딩중 쉽게 파악이 가능
+    result.data //성공하면 true
+    result.isLoading //로딩중이면 true
+    result.error //실패했을때(에러났을때) true
+    [Q]로딩중일 때 '로딩중입니다'보여주고싶으면?
+    {}열고
+    result.isLoading을 써서 삼항연산자를 활용해서 보여주면 됨
+    {result.isLoading ? '로딩중' : result.data.name }
+    {result.isLoading && '로딩중' }
+    {result.error && '에러남'}
+    {result.error && result.data.name}
+
+    [장점2]틈만나면 자동으로 재요청해줌( refetch )
+    틈만나면 신선한 데이터를 가져옴
+    let result = useQuery("작명", () => {
+    return axios
+    .get("https://codingapple1.github.io/userdata.json")
+    .then((a) => {
+    console.log('요청됨') // ajax가 틈만나면 요청되는 걸 파악하기 위함
+    return a.data;
+    });
+    });
+
+    > > ajax요청이 성공했을때마다 console창에 요청됨이 추가됨 ( 다른 페이지에서 넘어가거나 다른 프로그램에서 다시 들어가도 요청이됨)
+    > > [Q] 요청시간간격을 설정해주고싶다면?
+    > > let result = useQuery(
+    > > "a",
+    > > () => {
+
+        return axios
+          .get("https://codingapple1.github.io/userdata.json")
+          .then((a) => {
+            console.log("요청됨");
+            return a.data;
+          });
+
+    },
+    { staleTime: 2000 }
+    );
+    [주의] {staleTime: 2000} 부분은 잘못 입력해도 오류가 나지않음 - 괄호 파악 잘해야함
+    [장점3] 실패시 retry알아서 해줌 -실패하면 알아서 재시도함
+    ajax요청을 알아서 재시도를 해줌 오류가 나더라도
+    [장점4] state공유 안해도 됩니다.
+    ajax요청해서 Mark가져오는 코드가 부모 자식 컴포넌트 2개나 있어야함? - > 한번에 하나만 하면 됩니다. state props전송코드가 필요없음
+    불안하면 props전송해주면되긴함
+    [장점5] ajax결과 캐싱기능 5분동안 기억함
+    예를들어 (12시10분에 실행됨)userdata.json GET요청 (12시13분에 실행됨)userdata.json GET요청 ?
+    그러면 이전에 했던 결과를 우선 보여줌. 그다음에 GET요청을 함
+    이러면 ajax성공하기도 전에 기존 성공결과를 보여주기 때문에 빨라보이는 장점이 있음
+
+[참고] redux-Toolkit설치하면 RTK Query도 자동설치되어 있을듯 -> 이거 배운거랑 유사하지만 문법이 괴랄함..
+[참고] 더 이상 배우려면 react-query 공식 사이트 참고

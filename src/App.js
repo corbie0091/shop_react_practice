@@ -8,6 +8,7 @@ import Detail from "./routes/Detail.js";
 import About from "./routes/About.js";
 import axios from "axios";
 import Cart from "./routes/Cart.js";
+import { useQuery } from "react-query";
 
 export let Context1 = createContext();
 
@@ -16,6 +17,19 @@ function App() {
   let [storage] = useState([10, 11, 12]);
   let [watched, setWatched] = useState([]);
   let navigate = useNavigate();
+
+  let result = useQuery(
+    "a",
+    () => {
+      return axios
+        .get("https://codingapple1.github.io/userdata.json")
+        .then((a) => {
+          console.log("요청됨");
+          return a.data;
+        });
+    },
+    { staleTime: 2000 }
+  );
 
   useEffect(() => {
     if (!localStorage.getItem("watched")) {
@@ -60,6 +74,11 @@ function App() {
               CART
             </Nav.Link>
           </Nav>
+          <Nav className="ms-auto" style={{ color: "white" }}>
+            {result.isLoading && "로딩중"}
+            {result.error && "에러남"}
+            {result.data && result.data.name + "님 안녕하세요"}
+          </Nav>
         </Container>
       </Navbar>
 
@@ -67,7 +86,12 @@ function App() {
         <Route
           path="/"
           element={
-            <MainPage shoes={shoes} watched={watched} setWatched={setWatched} />
+            <MainPage
+              shoes={shoes}
+              watched={watched}
+              setWatched={setWatched}
+              setShoes={setShoes}
+            />
           }
         />
         <Route path="/shop" element={<div>옷페이지임</div>} />
