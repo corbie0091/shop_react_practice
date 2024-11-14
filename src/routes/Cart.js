@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { increase } from "./../store/userSlice";
 import { addCount, removeItem } from "./../store";
 import { memo, useState } from "react";
+import { useNameGet } from "../hooks/nameGet";
 
 let Child = memo(function () {
   console.log("재랜더링");
@@ -10,6 +11,7 @@ let Child = memo(function () {
 });
 
 function Cart() {
+  let name = useNameGet();
   let state = useSelector((state) => {
     return state;
   });
@@ -28,6 +30,7 @@ function Cart() {
       >
         ++
       </button>
+      {name}
       {state.user.name}님의 나이{state.user.age}의 장바구니
       <button
         onClick={() => {

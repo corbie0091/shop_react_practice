@@ -4,9 +4,12 @@ import { useParams } from "react-router-dom";
 import { Context1 } from "../App.js";
 import { addCartList } from "../store.js";
 import { useDispatch } from "react-redux";
+import { useLike } from "../hooks/like.js";
 
 function Detail(props) {
   useContext(Context1);
+
+  let [like, addLike] = useLike();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,6 +43,14 @@ function Detail(props) {
           <img src={props.shoes[id].img} width="100%" alt="" />
         </div>
         <div className="col-md-6">
+          {like}{" "}
+          <span
+            onClick={() => {
+              addLike(like + 1);
+            }}
+          >
+            👍
+          </span>
           <h4 className="pt-5">{props.shoes[id].title}</h4>
           <p>{props.shoes[id].content}</p>
           <p>{props.shoes[id].price}</p>

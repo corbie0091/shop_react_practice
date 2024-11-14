@@ -1689,3 +1689,126 @@ count라는 state가 변경되고나서 age도 변경해주세요 이런식으�
    setAge(age+1)
    }
    }, [count])
+
+27강 custom hook으로 코드 재사용하기
+:그냥 반복적인 코드를 function으로 재사용하는 것일 뿐
+
+좋아요 버튼과 기능을 만들어보자.
+Detail.js] {like} <span>👍</span> 을 리턴문에 추가하자
+
+- let [ like, setLike] = useState(0);
+  <span onClick={() => { setLike(like+1)}}>👍</span>
+  [참고] 콜백함수를 setLike에 집어넣는 방식도 있음 - state변경함수안에 함수를 집어넣어도 상관없음, 기존 state값이 들어 있음
+  즉 <span onClick={() => { setLike((a) => {return a+1})}}>👍</span>
+  <span onClick={() => { setLike(a => a+1)}}>👍</span>
+  이렇게 축약이 가능
+  근데 여기서 축약이 가능 - function을 만들어서 가져다 쓰는 방법이 있음
+
+* function 문법
+  function 으로 긴 코드를 한 단어로 축약이 가능
+
+function addLike() {
+setLike(a => a+1)
+}
+
+addLike()이런식으로 실행
+<span onClick={() => { addLike()}}>👍</span>
+
+[Q] 다른 컴포넌트에서 필요하다면?
+코드 복붙도 한계가 있을 듯 -> 함수화 해놓고 재사용하면 될듯
+
+-> 즉
+
+function 함수() {
+let [like, setLike] = useState(0)
+function addLike() {
+setLike(a => a+1)
+}
+}
+
+이렇게 한단어로 표현하면 되지 않을까 -> 수정이 필요할때도 이것만 수정진행하면 될듯
+
+function으로 빼보자
+1파일에는 1가지역할만 하는 함수가 되도록하면 좋음 -> 파일을 분리시키자.
+src > hooks파일 생성 > like.js 파일생성
+function 함수() {
+let [like, setLike] = useState(0)
+function addLike() {
+setLike(a => a+1)
+}
+}
+복붙하면 다른 곳에서 함수() 이렇게 가져다 쓰면 됨
+
+[Q]여기있는 함수를 다른 곳에서 사용하고싶다면 export?
+export function useLike() {
+let [like, setLike] = useState(0)
+function addLike() {
+setLike(a => a+1)
+}
+}
+
+이후 Detail.js에서 useLike를 가져다 쓰면 될듯
+[참고] 함수로 빼낼 떄 정의되지 않은 변수, 함수를 정의해줘야함
+ex) useState -> import해주거나 파라미터 props 로 입력해서 정의해줘야함
+
+Detail.js] import { useLike } from "../hooks/like.js
+function Detail(props) { useLike()}
+하지만 이렇게하면 오류가 남
+안에 like변수있는데 여기서 사용은 못함
+함수안에 있던 변수는 함수안에서만 사용이 가능
+안에 있던 like변수를 바깥에서도 쓰고싶다면
+바깥으로 배출시켜야함
+
+export function 함수() {
+let [like, setLike] = useState(0)
+function addLike() {
+setLike(a => a+1)
+}
+
+return "something"
+}
+
+return문에 적어놓으면
+useLike()를 사용했을떄 이 return에 적어주면 됨
+-> return [like, addLike]; // 변수와 함수가 남도록 해줌
+즉 리턴문에 배열로 정의해서 바깥에서도 사용가능하게끔 정의함
+
+디스트럭처링 문법사용)
+-> function Detail() {
+
+let [ like, addLike ] = useLike()
+}
+
+이렇게 디스트럭처링문법을 사용하면
+해당 컴포넌트에서 이제 사용이 가능해짐
+
+이렇게 하면 아까처럼 사용됨
+
+-> 코드 재사용하고싶으면 함수로 빼서 사용하면 됨
+[주의]use어쩌구()가 함수안에 들어있으면 함수 이름이 use로 시작해야함
+[참고]useState useEffect 이런것들은 컴포넌트에서 위쪽에만 쓸 수 있음
+if문안에서도 못쓰게 되어 있음
+그래서 useLike()이런것도 위에서 사용해야함
+리턴문이런데서 사용x
+
+useLike 는 커스텀훅에 속함
+
+[과제] 서버에서 내 이름 가져오기??
+서버 data를 요청해서 가져오기
+axios.get("/username.json")
+
+가져와서 html로 보여주는 코드를 작성해주면 됨
+이코드를 함수로 빼서 customhook으로 만들어보자.
+nameGet.js]
+export function useNameGet() {
+let [username, setUsername] = useState("");
+useEffect(() => {
+axios.get("/username.json").then((r) => {
+setUsername(r.data);
+});
+}, []);
+
+return username;
+}
+
+public/username.json 으로 폴더위치를 설정해서 서버대신에 public에서 정보를 가져올 수 있도록 설계한뒤에 export import해서 뿌려주면 된다.
