@@ -1812,3 +1812,167 @@ return username;
 }
 
 public/username.json 으로 폴더위치를 설정해서 서버대신에 public에서 정보를 가져올 수 있도록 설계한뒤에 export import해서 뿌려주면 된다.
+
+28강 Node+Express 서버와 React 연동하려면?
+
+서버 = 유저가 데이터 요청하면 가져다 주는 것
+웹서버 = 웹문서를 요청하면 웹문서를 제공하는 것
+웹문서 = html파일
+
+[Q]React, Angular, Vue, Svelte?
+-> 전부 다 html을 이쁘게 만들어주는 툴인 것임
+누가 내 사이트에 접속했을때 html 페이지 > 리액트로 만든 html보여줌
+이게 리액트 연동 끝 (즉 리액트 합치기임 )
+
+서버를 만들고싶다?
+
+1. nodejs 구글에서 검색해서 설치
+2. 직업폴더 만들고 에디터로 오픈
+   server폴더만들기 진행
+3. server.js만들어서 코드 복붙
+   const express = require('express');
+   const path = require('path');
+   const app = express();
+
+app.listen(8080, function () {
+console.log('listening on 8080')
+});
+위 코드 복붙 4. 에디터 터미널 열어서 npm init -y입력
+
+- Execution Policy 오류가 날시
+
+a. PowerShell에서 실행 정책을 조정
+b. PowerShell을 관리자 권한으로 실행
+c. Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+d. Y - Enter
+e. Get-ExecutionPolicy -Scope CurrentUser 하면 RemoteSigned가 나오면 성공임
+f. npm init -y
+
+5. npm install express도 입력
+
+6. 리액트 프로젝트도 같이 있어야함
+   server파일 옆에 리액트 프로젝트 생성상태여야함
+
+7. 리액트는 개발이 끝나면 build를 해야 html파일이 나옴
+   build방법 : npm run build
+   -> 빌드 작업을 진행( html파일로 바꿔줌 )
+
+-> 이제 서버에서 가져다 쓸 준비가 완료됨
+
+8. 이후 server폴더 안에다가
+   개발이 끝난 React프로젝트 폴더를 대충 넣어놈
+
+9. 누가 내 사이트 접속시 리액트로 만든 html 보내주면 끝인 것임
+   "메인페이지로 접속했을때 이 파일을 보내주세요"의 코드를 작성하면 됨
+   ex) server.js]
+   app.get('/', function(요청, 응답){
+   응답.sendFile(path.join(\_\_dirname, '리액트로만든html파일경로))
+   })
+
+   리액트로만든html파일경로는 server파일안에 리액트프로젝트 안에 build폴더안에 들어있음
+   즉 , 'my-react-app/build/index.html'을 작성하면 됨
+
+   app.get('/', function (request, response) {
+   response.sendFile(path.join(\_\_dirname, 'my-react-app/build/index.html'));
+   });
+   이걸 추가해주면 됨
+
+10. 위의 코드 상단에 추가해야하는 코드
+    app.use(express.static(path.join(\_\_dirname, 'my-react-app/build)))
+
+이제서야 누가 메인페이지에 접속했을때 보여줄수 있는 것에 대한 설정을 완료함
+
+- 서버를 띄워보려면? 터미널에
+  nodemon 이 설치 되어 있으면 nodemon server.js만 입력,
+  없다면 node server.js 입력
+
+http://localhost:8080/ 주소로 들어가면 서버가 on 이 된 것을 알 수 있음
+
+11. 리액트는 html을 만드는 툴일 뿐임
+    이를 연결해주는게 끝임
+
+[Q] 여러 페이지를 만들고 싶으면??
+원래 서버안에서 라우팅으로 가능함 (/detail) (/about)으로 다른 페이지로 들어갈 수 있음
+리액트 안에서도 가능 리액트-라우터로
+리액트-라우터 에서 /detail 만들어 놨음
+근데 /detail로 입력하면 페이지를 요청인데 이부분은 라우팅에게 직접 요청이 되지 않음
+
+그래서
+app.get('\*', function (request, response) {
+response.sendFile(path.join(\_\_dirname, 'my-react-app/build/index.html'));
+});
+
+이런식으로 하면 리액트 -라우터가 직접 처리하게끔 도와줌
+
+- \*(별표)는 모든 경로라는 뜻
+  [해석]유저가 주소창에다가 이상하게 경로 입력했는데 서버기능개발이 안되어있는 부분이었음
+  -> 이러면 메인페이지를 보여줘라라는 뜻임
+  Detail도 이렇게 수정하면 리액트-라우팅이 담당해서 관련 페이지를 보여주게 될 것임
+
+[Q] DB데이터 어떻게 리액트에서 보여주나요?
+db에서 데이터를 뽑아서 -> 서버에서 html에 꽃음 -> 유저에 보냄
+리액트) db에서 데이터를 뽑아서 그대로 프론트단에 보냄 -> 받은 데이터로 react가 html만들어줌
+
+html 을 서버가 만들면 server-side-rendering
+html 을 리액트(js)가 만들면 client-side-rendering
+ex) 쇼핑몰에서 DB에 있던 상품명을 보여주려면? (리액트로)
+db에 있는 상품명을 꺼내서 보여주려면? ->
+라우트를 하나만들어서 get요청으로 데이터를 뽑아서 유저에게 보내주세요 라는 코드를 짜면 됨
+app.get('/product', function(request, response){
+response.json({name: 'black shoes'})
+})
+response.json = 객체나 배열자료를 그대로 보여주고싶다면 이런식으로 진행
+db에서 꺼낸 데이터도 이렇게 집어넣을 수 있음
+-> 쏴줄수 있게됨
+-> 리액트에선 상품데이터를 필요할때마다 요 /product경로로 데이터를 요청(ajax등으로)하면 되는 것임
+
+- 아래 코드를 server.js에 추가해놔야 ajax잘 됩니다.
+  [참고] cors는 별도로 설치가 필요 (npm install cors 로 설치)
+  app.use(express.json());
+  var cors = require('cors');
+  app.use(cors());
+
+- DB데이터 보여주는 원리
+
+* DB데이터 뽑아서 보내주는 API작성
+* 리액트) 여기로 GET요청 POST요청해서 데이터를 가져오기만 하면 됨
+
+[Q]리액트코드 수정할 때마다 build해야하나요?
+그럴필욘 없음
+로컬pc환경에서 개발할땐 필요x 리액트 . 서버 프로젝트 진행하면되고
+사이트를 웹서버에 올릴때 그때 빌드하면 된다.
+
+리액트 -> 서버 ajax 요청시 /product 이렇게 말고 http://서버주소/product 잘 입력하고
+서버에 cors옵션만 잘 켜놓으면 된다.
+
+서버주소 입력이 귀찮으면 proxy라는 부분을 서버 미리보기 띄우던 localhost:어쩌구 주소로 설정해주면 됨
+그러면 알아서 보내줌
+[참고]
+https://create-react-app.dev/docs/proxying-api-requests-in-development/
+
+[Q]서버에서 리액트 말고 일반 html 파일도 필요하면?
+즉 /react 이렇게 접속하면 리액트로 만든 html
+/이렇게 접속하면 public폴더 안에 있던 그냥 html을 보여주고 싶은 경우?
+(server.js)
+
+app.use( '/', express.static( path.join(**dirname, 'public') ))
+app.use( '/react', express.static( path.join(**dirname, 'react-project/build') ))
+
+app.get('/', function(요청,응답){
+응답.sendFile( path.join(**dirname, 'public/main.html') )
+})
+app.get('/react', function(요청,응답){
+응답.sendFile( path.join(**dirname, 'react-project/build/index.html') )
+})
+으로 server.js라우팅을 이렇게 바꿔주고
+
+(리액트프로젝트 내의 package.json)
+{
+"homepage": "/react",
+"version": "0.1.0",
+... 등
+}
+▲ 리액트 프로젝트 내의 package.json에 homepage라는 항목을
+여러분이 발행을 원하는 서브디렉토리명으로 새로 기입해주면 됩니다.
+그럼 방금 server.js 에서 /react 접속시 리액트 프로젝트보내고
+/ 접속시 일반 html 파일 보내라고 했으니 됨
