@@ -1389,3 +1389,43 @@ lazy함수를 이용해서 작성
 대부분의 Route부분은 lazyload하도록 만들어 놓기 때문에 Routes를 Suspense로 감싸도 상관은 없음
 -> 이러면 페이지로딩속도를 개선할 수 있음
 -> Suspense로 감싸지 않는다면 오류가 남 ( 일시적으로 UI가 일시적으로 로딩 표시기로 교체되기 때문 )
+
+24강. 성능개선2 : 재렌더링 막는 memo, useMemo
+원하는 자식 컴포넌트의 재랜더링을 막고 싶을떈??
+ex) Cart컴포넌트안에 자식컴포넌트인 Child컴포넌트를 삽입,
+이후 Cart컴포넌트의 변수가 버튼클릭으로 바뀔때 Cart컴포넌트는 재랜더링이 될 것인데, 자식들도 전부 랜더링이 될 것임
+만약 자식컴포넌트가 랜더링시간이 오래걸리는 친구라면?
+=> 꼭 필요할 때만 재랜더링해주세요라고 코드를 짜줄 수 있는 것임
+Child컴포넌트를 만들 때 memo해주면 됨
+let Child = memo(function () {
+console.log("재랜더링");
+return <div>자식임</div>;
+});
+이런식으로 memo 해주면 이제 꼭 필요할 때만 재렌더링됨
+즉 memo로 재렌더링오래걸리는 컴포넌트 감싸놓으면 좋음
+[원리] memo 의 원리는 특정상황에서만 렌더링시켜주는 원리
+특정 props가 변할 때만 재렌더링 해줌
+<Child/> 컴포넌트에 <Child count={count}/>로 해놓으면
+자식컴포넌트의 props가 바뀌므로 재렌더링이 진행됨 - 이외에는 렌더링x
+하지만 이런식이라면 기존 props === 신규 props 비교하는데도 매우 오래 걸릴 수가 있음 - > props가 길고 복잡하면 손해일 수도 있으므로
+온갖 자식 컴포넌트에 붙이면 성능이 오히려 떨어질 수도 있음
+
+useMemo 사용법
+Cart컴포넌트안에 어렵고 복잡한 함수가 필요함
+function 함수 () {
+return 반복문 10억번 돌린 결과
+}
+
+function Cart() { let result = 함수();}
+
+- Cart가 재렌더링될 때마다 실행되므로 성능이 떨어짐
+
+[방법] useMemo(() => {return 함수()}) 코드 추가해주면 됨
+이런식으로 하면 컴포넌트 렌더링시 1회만 실행해줌 - 안정적동작가능
+-useEffect랑 같은 원리 , dependency추가 가능
+function Cart() { let result = 함수();
+useMemo(() => {return 함수()}, [state]) // dependency추가부분
+}
+[이유] useMemo useEffect차이점? - 실행시점의 차이임
+useEffect는 HTML이 실행이 다 끝나면 실행
+useMemo는 랜더링 될때 실행됨
