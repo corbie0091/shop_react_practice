@@ -14,8 +14,9 @@ function Cart() {
     return state;
   });
   let prchs = useSelector((state) => state.prchs);
-  let [count, setCount] = useState(0);
   let dispatch = useDispatch();
+
+  let [count, setCount] = useState(0);
 
   return (
     <div>

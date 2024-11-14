@@ -1594,3 +1594,98 @@ pwa가 셋팅이 완료된 프로젝트가 있어야함
 [Q] 특정파일들을 캐싱 안되게 설정하고 싶다면? (exclude하고 싶다면?)
 [방법] node_modules/react-scripts/config.webpack.config.js들어가서
 [방법] injectManifest에서 exclude부분에 정규식으로 내가 안되게 설정하고싶은 부분들을 코드 짜주면 됨 /index\.html/ 이러면 됨
+
+26강 state 변경함수 사용할 때 주의할 점 : async
+자바스크립트는 일반적인 코드를 작성하면 synchronous하게 처리됨
+즉 동기 방식임 ( 코드 적은 순서대로 윗줄부터 차례대로 코드가 실행된다는 뜻 )
+거의 모든 프로그래밍 언어들은 무조건 위에서 부터 한줄한줄 실행됨
+console.log(1)
+console.log(2)
+console.log(3)
+이런 코드들은 synchronous하게 위에서 부터 한줄한줄 실행된다는 것임 : 1 2 3
+
+자바스크립트는 이상한 함수들을 사용하면 asynchronous하게 코드 실행이 가능함 ( 비동기적으로 실행 )
+ajax , 이벤트리스너, setTimeout 이런 함수들을 쓸 때 그런 현상이 일어남
+이런 함수들은 처리시간이 오래 걸리기 때문에 그런듯
+ajax를 예로 들면 인터넷 상황이 안좋으면 코드 실행이 오래 걸리면 다른 코드번역에 차질이 생길 수 있으므로 그래서 순차적으로 실행되지 않고 완료되면 실행되도록 만들어짐
+console.log(1)
+axios로 get요청하고나서 console.log(2) 실행해주셈
+console.log(3)
+이런 코드는 1 3이 바로 출력되고 그 다음에 2가 출력이 됨
+2를 출력하는 코드가 asynchronous 처리를 지원하는 코드라 그럼
+2를 출력할 때 오래걸리면 완료될 떄 까지 잠깐 보류했다가 다른 코드를 먼저 실행시킨다는 소리임
+심지어 ajax요청이 0.00초 걸려도 1, 3이 먼저 그다음이 2출력됨
+물리적으로 잠깐 처리가 보류되어서 그럼
+즉 자바스크립트라는 언어의 특징이자 장점이라고 볼 수 있음
+(물론 asynchronous 처리를 지원하는 함수들을 써야 이런식으로 동작함)
+
+리액트 setState함수의 특징
+function App() {
+let [ name, setName ] = useState('kim')
+}
+그리고 이제 setName을 사용하면 name이라는 state를 자유롭게 변경가능함
+근데 문제는 setName()과 같은 state변경함수들은 전부 asynchronous(비동기적)으로 처리됨
+그러니까 setName()이 오래걸리면 이거 제꺼두고 다른 밑에 있는 코드들 부터 실행된다는 것임 -> 그래서 오류가 발생할 수 있음
+ex) 버튼을 누르면 2개 기능을 순차적으로 실행하고 싶음
+function App() {
+let [ count, setCount ] = useState(0);
+let [ age, setAge ] = useState(20);
+
+return (
+
+<div>
+<div>안녕하십니까 전</div>
+<button onClick={() => {setCount(count + 1),
+count<3 ? setAge(age + 1) : setAge(age)}}>누르면 한살먹기</button>
+</div>
+)
+}
+count가 1일때 age는 21
+count가 2일때 age는 22
+count가 3일때 age는 22가 되어야하지만, 23으로 바뀜
+why? 위에서 말한 async라는 특징때문임
+state변경하는 함수는 async하게 처리되는 함수이기 때문에 완료되기까지 시간이 오래걸리면 제쳐두고 다음 코드를 실행해줌
+[코드해석]
+1) 버튼을 세번째 누르면 setCount(count+1); 이걸 실행해서 count를 3을 만들어줌
+2) 근데 count를 3으로 만드는건 오래걸리니까 제껴두고 setAge(age+1)을 실행함
+3) 이 떄 count는 아직 2라서 if문 안의 setAge(age+1)이 잘 작동하고 있는 것임
+
+이 모든 문제는 setCount함수가 async함수라서 그런 것임
+async함수는 오래걸리면 제껴두고 다음 줄 코드부터 실행하니가 그런 것
+
+그래서 저렇게 state1 변경하고 나서 state2를 변경하는 코드를 작성할 땐 가끔 문제가 생길 수 있음
+이걸 정확히 sync스럽게 순차적으로 실행하고 싶을 때 해결책은 useEffect가 됨
+useEffect를 잘 작성하면 특정 state가 변경될 때 useEffect를 실행할 수 있으니 알아서 잘 해결해보자.
+[해결방안]
+useEffect(() => {
+
+}, [count])
+
+useEffect는 컴포넌트가 렌더링/재렌더링될 때 실행되는 함수임
+근데 뒤에다가 []대괄호안에 state를 집어넣으면 state가 변경되면 이코드를 실행해주세요 라는 뜻으로도 사용이 가능해진다.
+그래서 이를 잘 활용하면 아까의 문제도 해결이 가능하다.
+count라는 state가 변경되고나서 age도 변경해주세요 이런식으로 순차적으로 코드를 실행할 수 있다는 것임
+
+1. 그래서 일단 버튼을 이렇게 변경하자.
+   <button onClick={() => {
+   setCount(count + 1);
+   }}>누르면한살먹기</button>
+   count라는 것만 +1 되게 바꿈
+
+2. 그다음에 나머지 age를 +1하는 코드는 useEffect안에 개발해놓음
+   useEffect(() => {
+   if(count < 3) {
+   setAge(age+1)
+   }
+   }, [count])
+   이러면 useEffect는 count라는 state가 변경되고나서 실행이 되며,
+   그럼 if문으로 count라는 state값을 제대로 의도대로 측정해볼 수 있는 것임
+
+3. 근데 문제는 useEffect 저렇게 써도 처음 페이지 로드될 떄도 한 번 실행이 되기 때문에 의도치 않은 버그가 발생할 수 있음
+   그래서 처음 페이지 로드시 useEffect실행을 막는 코드를 알아서 검색해서 적용해도 되고 아니면 count라는 state를 활용하면 좋을듯함
+   즉 count가 0일때는 내부 코드를 동작시키지 않도록 코드를 짜보는 것임
+   useEffect(() => {
+   if( count != 0 && count < 3) {
+   setAge(age+1)
+   }
+   }, [count])
