@@ -1429,3 +1429,106 @@ useMemo(() => {return 함수()}, [state]) // dependency추가부분
 [이유] useMemo useEffect차이점? - 실행시점의 차이임
 useEffect는 HTML이 실행이 다 끝나면 실행
 useMemo는 랜더링 될때 실행됨
+
+25강 성능개선 3 : useTransition, useDeferredValue
+리액트 18버전 이후부터
+렌더링 성능이 저하되는 컴포넌트에서 쓸 수 있는 혁신적인 기능이 하나 추가됨
+useTransition 이건데 이걸로 오래걸리는 부분을 감싸면 렌더링시에 버벅이지 않게 해줌 ( 코드 실행시점을 조절해주는 기능임 )
+리액트 18버전이 신기능
+
+1. batch 쓸데없는 재렌더링 방지기능 ( batching )
+   setCount(1)
+   setName(2)
+   setValue(3) //여기서 1번만 재렌더링됨
+   state변경함수들이 쭉 작성되어 있을때 state변경이 일어날때마다 재렌더링이 일어나는 것이 아니라 state3변경 될때만 재랜더링이 1회만 일어남
+   ajax setTimeout 등의 내부라면 재랜더링이 다일어났지만,
+   fetch().then(() => {
+   setCount(1) //재렌더링됨
+   setName(2) //재렌더링됨
+   })
+   18버전부터는 1회만 일어남
+2. useTransition 동작이 느린 컴포넌트들의 성능을 향상시킴 (카드 빛 돌려막기)
+   function App() {
+   let [name, useName] = useState('')
+
+   return (
+   <div className="App">
+   <input onChange={(e) => {setName(e.target.value)}}/>
+   </div>
+   )
+   }
+   input 에 유저가 입력하면 유저가 입력한 값이 name에 저장되도록함
+
+   > 그래서 user가 타이핑할 때마다 name이라는 state에 저장될 것임
+   > -> 이런식으로 행복하게 react개발하다 성능저하가 일어남
+
+let a = new Array(10000).fill(0) // 10000개가 채워진 배열
+function App() {
+let [name, useName] = useState('')
+
+return (
+
+<div className="App">
+<input onChange={(e) => {setName(e.target.value)}}/>
+{
+a.map(() => {
+return <div>{name}<div>
+})
+}
+</div>
+)
+}
+
+타이핑 할때마다 name이라는 state가 변경 >> name변경되면 이것도 렌더링이 되므로 성능이 별로가 됨 >> 키보드 입력했을때 0.2초보다 반응이 늦게 된다 >> 부정적인 UX >>
+[해결책1] 보여주는 HTML을 줄여나가는 것
+[해결책2] 굳이 10000개를 보여줘야한다면 useTransition 쓰기
+let [isPending,startTransition] = useTransition()설정으로 사용
+
+let a = new Array(10000).fill(0) // 10000개가 채워진 배열
+function App() {
+let [name, useName] = useState('')
+let [isPending,startTransition] = useTransition() // 해결책2
+return (
+
+<div className="App">
+<input onChange={(e) => {setName(e.target.value)}}/>
+{
+a.map(() => {
+return <div>{name}<div>
+})
+}
+</div>
+)
+}
+
+문제의 state를 감싸줘야함
+<input onChange={(e) => {setName(e.target.value)}}/>
+이부분이 문제이므로 이부분을 감싸주자
+<input onChange={(e) => {stateTransition() => {setName(e.target.value)}}}/>
+
+이러면 아까보다 성능이 조금더 나아진 모습을 볼 수 있음
+[원리]브라우저는 동시작업을 하지못함 (single-threaded)
+그래서 타이핑했을때 브라우저가 보여줄 것
+
+1 입력한 값을 input에 만들기
+2 10000개의 div박스 보여주기
+근데 useTransition을 사용하면
+코드 시작시점을 뒤로 늦춰줌 ( 우선순위를 정해줌 )
+3 먼저 입력한 값을 input에 보여주고
+4 한가할 때 div박스 10000개를 만듦( 실행시점을 조절함 )
+startTransition = 명시적으로 작명한다면? -> 늦게처리
+isPending = startTransition이 처리중일때 true로 변함 ( isLoading과 같음 ) -> 로딩중이라는 동작UI도 보여줄 수 있음
+isPending ? '로딩중' :
+a.map(() => {
+return ( <div>{name}</div>)
+})
+
+3. useDeferredValue 써도 느린 컴포넌트 성능향상가능
+   function App() {
+   let state = useDeferredValue(state) // 이부분
+
+   return ()
+   }
+   state에 넣은게 변동사항이 생기면 늦게 처리해줌
+   늦게 처리를 원하는 게 있다면 여기에 넣자
+   나중에 처리한다는 것 = 중요한 작업을 먼저처리하고 이후에 컴포넌트 생성하는 것 = startTransition과 비슷
