@@ -1327,3 +1327,65 @@ ex) 리덕스 쓰는 사람들은 Redux store에 있는 state들을 로컬스토
 
 [참고] redux-Toolkit설치하면 RTK Query도 자동설치되어 있을듯 -> 이거 배운거랑 유사하지만 문법이 괴랄함..
 [참고] 더 이상 배우려면 react-query 공식 사이트 참고
+
+23강 성능개선1 : 개발자도구 lazy import
+프로그램을 짜다보면 의도와는 다르게 props가 전송되는 경우가 많을 것임 (제대로 출력이 안됨, img경로가 이상함 )
+-> 코드를 확인하거나,, 개발자 도구를 열어보면됨
+개발자도구)
+
+1. React Developer Tools
+   Elements : html/css검사가능 + style도 체크가능
+   나는 컴포넌트 구조같은 걸 미리미리 보고싶다??
+   [Tip] chrome.google.com/webstore > React Developer Tools 설치 ㄱㄱ
+   이러면 개발자 탭에서 Components를 볼 수있게됨 - 디버깅 찾기가 쉬워짐
+   좌상단에 inspect툴을 누르면 컴포넌트 위치파악 +
+   현재 선택한 Card컴포넌트의 props를 다 찾아줌
+   shoes라는 props i 이런것들을 다 전달되고 있는지 확인 해볼 수 있음 + 간단한 수정도 가능 +
+   컴포넌트안의 state이런 것도 가능
+   App 컴포넌트의 state 이런 값들도 확인 해볼 수 있음
+   props와 state가 어떻게 반영되는지 파악하고싶다면이렇게 확인 해보는 것도 좋음
+   우상단-> Card Component의 위치를 코드 어떤위치에 있는지 파악시켜줌
+   Profiler -> 성능저하되는 컴포넌트 범인찾기 탭임
+   좌상단의 녹화버튼을 클릭하고 여러 버튼을 클릭해봄
+   -> 이후 녹화를 끝내면 action들을 다 알려줌 ->
+   어떤 컴포넌트들이 랜더링되었는지 알려줌 ->
+   Detail Component 등등 어떤 것 파악 가능(몇초 위치 다 알려주기 때문에 범인 색출이 가능)
+   (사실 보통은 걱정할 필요가 없음)
+
+- 웹사이트에서의 지연문제는 ajax문제임 즉 서버에서 데이터가 늦게와서 그럼 ( 프론트엔드부분에서는 상관없을듯 )
+
+2. Redux DevTools
+   같은 경로로 설치
+   프로젝트에 리덕스가 설치되어 있다면, 리덕스 관련탭을 오픈할 수 있을 것임
+   어떤 state 변경함수가 동작했는지 그런것들을 다 알려줌
+   ex) 수량변경 버튼누르면 addCount함수가 추가 된 로그가 뜨게 됨
+
+3. React = SPA ( sing page application )
+   npm run build = 발행
+   이는 발행하면 js파일 하나에 모든 코드가 다 들어감
+   그래서 사이즈가 매우 클 수 밖에 없음 -> 유저가 메인페이지 접속하면
+   1.html파일 2.css파일 3큰 js 파일 모두 다운을 받아서 로딩속도가 느림
+   그래서 이를 잘게 분할하고 싶다??
+   -> App.js] 여기서 Detail , Cart 컴포넌트가 import되어 있는데,
+   사실 이는 메인페이지에선 먼저 로드 할 필요가 없음
+   -> 이런 컴포넌트들은 lazy import해라 라고함 ( lazy하게 로딩해라)
+
+import Detail from "./routes/Detail.js";
+import Cart from "./routes/Cart.js";
+이거 대신에
+const Detail = lazy(() => import("./routes/Detail.js"));
+const Cart = lazy(() => import("./routes/Cart.js"));
+lazy함수를 이용해서 작성
+-> 필요해질 때 import해주세요~ -> 자원 절약이 가능해짐
+이걸 쓰고 싶으면 ? lazy를 react에서 import
+이렇게 하면 사이트 발행할 떄도 별도의 js파일로 분리됨
+[단점] 유저가 Detail 이나 Cart 페이지 접속할때
+로드 되기 전까지 하얗게 됨 -> 로드 되는 시간동안 안내문, 로딩바를 생성해야할 수도 있음 - Suspence 컴포넌트를 가져와서 감싸면
+로딩중 UI를 넣기 가능
+<Suspense fallback={<div>로딩중임</div>}>
+<Detail shoes={shoes}>
+</Suspense>
+이런식으로 코드를 짜면 됨
+대부분의 Route부분은 lazyload하도록 만들어 놓기 때문에 Routes를 Suspense로 감싸도 상관은 없음
+-> 이러면 페이지로딩속도를 개선할 수 있음
+-> Suspense로 감싸지 않는다면 오류가 남 ( 일시적으로 UI가 일시적으로 로딩 표시기로 교체되기 때문 )

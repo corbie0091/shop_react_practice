@@ -1,14 +1,15 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import "./App.css";
 import bg from "./img/bg.png";
-import { createContext, useEffect, useState } from "react";
+import { createContext, lazy, Suspense, useEffect, useState } from "react";
 import data from "./data/data.js";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import Detail from "./routes/Detail.js";
 import About from "./routes/About.js";
 import axios from "axios";
-import Cart from "./routes/Cart.js";
 import { useQuery } from "react-query";
+
+const Detail = lazy(() => import("./routes/Detail.js"));
+const Cart = lazy(() => import("./routes/Cart.js"));
 
 export let Context1 = createContext();
 
@@ -81,37 +82,38 @@ function App() {
           </Nav>
         </Container>
       </Navbar>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <MainPage
+                shoes={shoes}
+                watched={watched}
+                setWatched={setWatched}
+                setShoes={setShoes}
+              />
+            }
+          />
+          <Route path="/shop" element={<div>옷페이지임</div>} />
+          <Route path="/about" element={<About />}>
+            <Route path="member" element={<div>맴버임</div>} />
+            <Route path="location" element={<div>location</div>} />
+          </Route>
+          <Route path="/community" element={<div>공지사항페이지임</div>} />
+          <Route path="/cart" element={<Cart />} />
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <MainPage
-              shoes={shoes}
-              watched={watched}
-              setWatched={setWatched}
-              setShoes={setShoes}
-            />
-          }
-        />
-        <Route path="/shop" element={<div>옷페이지임</div>} />
-        <Route path="/about" element={<About />}>
-          <Route path="member" element={<div>맴버임</div>} />
-          <Route path="location" element={<div>location</div>} />
-        </Route>
-        <Route path="/community" element={<div>공지사항페이지임</div>} />
-        <Route path="/cart" element={<Cart />} />
-
-        <Route
-          path="/detail/:id"
-          element={
-            <Context1.Provider value={{ storage, shoes }}>
-              <Detail shoes={shoes} />
-            </Context1.Provider>
-          }
-        />
-        <Route path="*" element={<div>이 페이지는 없는 페이지입니다.</div>} />
-      </Routes>
+          <Route
+            path="/detail/:id"
+            element={
+              <Context1.Provider value={{ storage, shoes }}>
+                <Detail shoes={shoes} />
+              </Context1.Provider>
+            }
+          />
+          <Route path="*" element={<div>이 페이지는 없는 페이지입니다.</div>} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }
